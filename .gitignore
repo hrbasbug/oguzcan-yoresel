@@ -1,0 +1,13 @@
+# Yerel araçlar / editör / işletim sistemi
+.claude/
+.vercel/
+node_modules/
+.DS_Store
+Thumbs.db
+
+# Ham kaynak dosyalar — yayınlanan siteye dahil değil
+/arkaplanlı genel/
+/_docx_extract/
+/*.docx
+/WhatsApp Image*.jpeg
+/logo.jpeg
