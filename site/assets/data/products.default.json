@@ -1,0 +1,321 @@
+{
+  "cats": [
+    "Tümü",
+    "Salçalar",
+    "Soslar",
+    "Baharatlar",
+    "Sirkeler"
+  ],
+  "products": [
+    {
+      "id": "p1",
+      "name": "Domates Salçası",
+      "size": "450 g",
+      "cat": "Salçalar",
+      "price": 160,
+      "img": "domates-salcasi-450g.png",
+      "desc": "Dalından koparılan domatesleri kendi mevsiminde, katkısız olarak işliyoruz. Domatesin gerçek tadını, kokusunu ve rengini sofranıza taşıyan yoğun kıvamlı ev usulü salça.",
+      "stock": true
+    },
+    {
+      "id": "p2",
+      "name": "Domates Salçası",
+      "size": "1 Kg",
+      "cat": "Salçalar",
+      "price": 330,
+      "img": "domates-salcasi-1kg.png",
+      "desc": "Kalabalık sofralar ve kışlık hazırlıklar için ideal 1 kg boy. Tamamen doğal, katkısız; çorbadan yemeğe her tarifin lezzetini tamamlar.",
+      "stock": true
+    },
+    {
+      "id": "p3",
+      "name": "Tatlı Biber Salçası",
+      "size": "450 g",
+      "cat": "Salçalar",
+      "price": 185,
+      "img": "tatli-biber-salcasi-450g.png",
+      "desc": "Güneşte özenle kurutulan biberlerden, acısız ve yumuşak lezzetiyle. Kahvaltıdan yemeğe kadar sofranıza Gaziantep'in doğal tadını getirir.",
+      "stock": true
+    },
+    {
+      "id": "p4",
+      "name": "Tatlı Biber Salçası",
+      "size": "1 Kg",
+      "cat": "Salçalar",
+      "price": 385,
+      "img": "tatli-biber-salcasi-1kg.png",
+      "desc": "Katkısız, güneşte kurutulmuş tatlı biberden hazırlanan yoğun kıvamlı salça. Ailece tüketim için ekonomik 1 kg boy.",
+      "stock": true
+    },
+    {
+      "id": "p5",
+      "name": "Tatlı Biber Salçası",
+      "size": "2 Kg",
+      "cat": "Salçalar",
+      "price": 700,
+      "img": "tatli-biber-salcasi-2kg.png",
+      "desc": "Yoğun kullanan mutfaklar ve kışlık için en avantajlı 2 kg boy. Doğal, katkısız ve el emeği tatlı biber salçası.",
+      "stock": true
+    },
+    {
+      "id": "p6",
+      "name": "Acı Biber Salçası",
+      "size": "450 g",
+      "cat": "Salçalar",
+      "price": 185,
+      "img": "aci-biber-salcasi-450g.png",
+      "desc": "Güneşte kurutulan acı biberlerden, o meşhur Antep acısıyla. Katkısız üretim; yemeklerinize karakterli ve dengeli bir acılık katar.",
+      "stock": true
+    },
+    {
+      "id": "p7",
+      "name": "Acı Biber Salçası",
+      "size": "2 Kg",
+      "cat": "Salçalar",
+      "price": 700,
+      "img": "aci-biber-salcasi-2kg.png",
+      "desc": "Acı sevenler için bol miktarda, ekonomik 2 kg boy. Doğal yöntemlerle, güneşte kurutulmuş biberden hazırlanan gerçek Antep acı salçası.",
+      "stock": true
+    },
+    {
+      "id": "p8",
+      "name": "Nar Ekşisi",
+      "size": "300 g",
+      "cat": "Soslar",
+      "price": 300,
+      "img": "nar-eksisi-300g.png",
+      "desc": "Gerçek nar suyundan, yavaşça kaynatılarak elde edilen yoğun ve dengeli ekşi. Salatalara, mezelere ve et yemeklerine eşsiz bir tat verir.",
+      "stock": true
+    },
+    {
+      "id": "p9",
+      "name": "Nar Ekşisi",
+      "size": "575 g",
+      "cat": "Soslar",
+      "price": 450,
+      "img": "nar-eksisi-575g.png",
+      "desc": "Katkısız, koyu kıvamlı nar ekşisinin avantajlı büyük boyu. Sofranızın vazgeçilmez doğal sosu; mevsim salatalarının olmazsa olmazı.",
+      "stock": true
+    },
+    {
+      "id": "p10",
+      "name": "Kimyon",
+      "size": "50 g",
+      "cat": "Baharatlar",
+      "price": 60,
+      "img": "kimyon.png",
+      "desc": "Taze öğütülmüş, aroması yerinde kimyon. Köfteden çorbaya, kuru baklagillerden ete tüm yemeklerinize sıcacık bir derinlik katar.",
+      "stock": true
+    },
+    {
+      "id": "p11",
+      "name": "Karabiber",
+      "size": "50 g",
+      "cat": "Baharatlar",
+      "price": 85,
+      "img": "karabiber.png",
+      "desc": "Organik tanelerden taze çekilmiş karabiber. Keskin kokusu ve dengeli acısıyla her mutfağın temel baharatı.",
+      "stock": true
+    },
+    {
+      "id": "p12",
+      "name": "Acı Toz Biber",
+      "size": "50 g",
+      "cat": "Baharatlar",
+      "price": 65,
+      "img": "aci-toz-biber-50g.png",
+      "desc": "Gurme baharatlar serisinden, ince öğütülmüş acı toz biber. Yemeklerinize canlı bir renk ve dengeli acılık verir.",
+      "stock": true
+    },
+    {
+      "id": "p13",
+      "name": "Acı Toz Biber",
+      "size": "100 g",
+      "cat": "Baharatlar",
+      "price": null,
+      "img": "aci-toz-biber-100g.png",
+      "desc": "Sık kullananlar için 100 g boy. İnce öğütülmüş, katkısız acı toz biber; sofranıza Antep'in canlı kırmızısını taşır.",
+      "stock": true
+    },
+    {
+      "id": "p14",
+      "name": "Toz Biber",
+      "size": "50 g",
+      "cat": "Baharatlar",
+      "price": 65,
+      "img": "toz-biber-50g.png",
+      "desc": "Tatlı, ince öğütülmüş kırmızı toz biber. Yemeklere renk ve hafif bir tatlılık katan doğal baharat.",
+      "stock": true
+    },
+    {
+      "id": "p15",
+      "name": "Toz Biber",
+      "size": "100 g",
+      "cat": "Baharatlar",
+      "price": null,
+      "img": "toz-biber-100g.png",
+      "desc": "Kırmızı biberden hazırlanan tatlı toz biberin 100 g avantajlı boyu. Katkısız, doğal renk ve lezzet.",
+      "stock": true
+    },
+    {
+      "id": "p16",
+      "name": "Köfte Baharatı",
+      "size": "65 g",
+      "cat": "Baharatlar",
+      "price": 65,
+      "img": "kofte-baharati.png",
+      "desc": "Özel karışım köfte baharatı. Kıymalı yemeklerinize kusursuz bir lezzet dengesi kazandıracak, ölçüsü ayarlanmış harman.",
+      "stock": true
+    },
+    {
+      "id": "p17",
+      "name": "Tavuk Baharatı",
+      "size": "65 g",
+      "cat": "Baharatlar",
+      "price": 65,
+      "img": "tavuk-baharati.png",
+      "desc": "Tavuk yemekleri için özenle harmanlanmış baharat karışımı. Fırın, ızgara ve sotelerde iştah açan bir aroma sağlar.",
+      "stock": true
+    },
+    {
+      "id": "p18",
+      "name": "Acı Pul Biber",
+      "size": "50 g",
+      "cat": "Baharatlar",
+      "price": null,
+      "img": "aci-pul-biber.png",
+      "desc": "Güneşte kurutulup pul pul öğütülen acı biber. Çorbadan mezeye her sofraya karakterli bir acılık ve iştah katar.",
+      "stock": true
+    },
+    {
+      "id": "p19",
+      "name": "İpek Pul Biber",
+      "size": "100 g",
+      "cat": "Baharatlar",
+      "price": 85,
+      "img": "ipek-pul-biber.png",
+      "desc": "Özel kavrulmuş İslahiye biberinden, yağı alınmadan hazırlanan yumuşak içimli pul biber. İpeksi dokusu ve hafif acısıyla farkını hissettirir.",
+      "stock": true
+    },
+    {
+      "id": "p20",
+      "name": "İsot Biber",
+      "size": "100 g",
+      "cat": "Baharatlar",
+      "price": 75,
+      "img": "isot-biber.png",
+      "desc": "Özel kavrulmuş Urfa biberi, tuz ve güneş ışığıyla olgunlaştırılan gerçek isot. Koyu rengi ve tütsülü aromasıyla yöresel sofraların yıldızı.",
+      "stock": true
+    },
+    {
+      "id": "p21",
+      "name": "Kuru Nane",
+      "size": "50 g",
+      "cat": "Baharatlar",
+      "price": 60,
+      "img": "kuru-nane.png",
+      "desc": "Gölgede kurutulmuş, aroması korunmuş kuru nane. Çorbalara, ayrana ve yemeklere ferahlatıcı bir koku ve tat verir.",
+      "stock": true
+    },
+    {
+      "id": "p22",
+      "name": "Toz Soğan",
+      "size": "50 g",
+      "cat": "Baharatlar",
+      "price": 60,
+      "img": "toz-sogan.png",
+      "desc": "Kurutulup ince öğütülmüş doğal toz soğan. Pratik kullanımı ve yoğun aromasıyla marinasyon ve harçların gizli lezzeti.",
+      "stock": true
+    },
+    {
+      "id": "p23",
+      "name": "Çörek Otu",
+      "size": "50 g",
+      "cat": "Baharatlar",
+      "price": null,
+      "img": "corek-otu.png",
+      "desc": "Doğal, ayıklanmış çörek otu. Ekmek ve poğaçaların üzerine, salatalara ve kahvaltılıklara nefis bir tat ve görüntü katar.",
+      "stock": true
+    },
+    {
+      "id": "p24",
+      "name": "Susam",
+      "size": "50 g",
+      "cat": "Baharatlar",
+      "price": null,
+      "img": "susam.png",
+      "desc": "Doğal susam tohumu. Fırın ürünlerinden tahinli tariflere, sofranıza bereket ve çıtırlık ekleyen doğal lezzet.",
+      "stock": true
+    },
+    {
+      "id": "p25",
+      "name": "Toz Tarçın",
+      "size": "50 g",
+      "cat": "Baharatlar",
+      "price": null,
+      "img": "toz-tarcin.png",
+      "desc": "Taze öğütülmüş toz tarçın. Tatlılardan sıcak içeceklere, sütlaçtan komposto ve hamur işlerine sıcacık bir aroma verir.",
+      "stock": true
+    },
+    {
+      "id": "p26",
+      "name": "Zerdeçal",
+      "size": "50 g",
+      "cat": "Baharatlar",
+      "price": null,
+      "img": "zerdecal.png",
+      "desc": "Doğal, katkısız zerdeçal. Canlı sarı rengi ve toprağımsı aromasıyla yemeklerinize hem renk hem sağlıklı bir dokunuş katar.",
+      "stock": true
+    },
+    {
+      "id": "p27",
+      "name": "Limon Tuzu",
+      "size": "50 g",
+      "cat": "Baharatlar",
+      "price": null,
+      "img": "limon-tuzu.png",
+      "desc": "Doğal limon tuzu. Yemek ve salatalara ferah bir ekşilik verir; kışlık hazırlıklarda da güvenle kullanılır.",
+      "stock": true
+    },
+    {
+      "id": "p28",
+      "name": "Toz Sumak Ekşisi",
+      "size": "50 g",
+      "cat": "Baharatlar",
+      "price": null,
+      "img": "toz-sumak.png",
+      "desc": "Sumak bitkisinden öğütülen doğal ekşi baharat. Salata, soğan ve kebap sofralarının vazgeçilmez, dengeli ekşiliği.",
+      "stock": true
+    },
+    {
+      "id": "p29",
+      "name": "Enginar Sirkesi",
+      "size": "500 ml",
+      "cat": "Sirkeler",
+      "price": null,
+      "img": "enginar-sirkesi.png",
+      "desc": "Doğal fermantasyonla üretilen enginar sirkesi. Salatalarınıza ve günlük tüketiminize yumuşak, aromatik bir ekşilik katar.",
+      "stock": true
+    },
+    {
+      "id": "p30",
+      "name": "Elma Sirkesi",
+      "size": "500 ml",
+      "cat": "Sirkeler",
+      "price": null,
+      "img": "elma-sirkesi.png",
+      "desc": "Gerçek elmalardan, doğal yöntemle üretilen elma sirkesi. Salatalardan günlük kullanıma, sofranızın doğal ve ferah tamamlayıcısı.",
+      "stock": true
+    },
+    {
+      "id": "p31",
+      "name": "Ananas Sirkesi",
+      "size": "500 ml",
+      "cat": "Sirkeler",
+      "price": null,
+      "img": "ananas-sirkesi.png",
+      "desc": "Ananastan üretilen, tropikal aromalı doğal sirke. Salata ve soslarınıza farklı, hoş bir tat arayanlar için ideal.",
+      "stock": true
+    }
+  ]
+}

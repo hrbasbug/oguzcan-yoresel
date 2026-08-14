@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Yönetim Paneli — Oğuzcan Yöresel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#c19a4b; --gold-deep:#a07d33; --brand:#a81e28; --brand-dark:#821820;
+  --ink:#241c17; --ink-soft:#5f544b; --ink-mute:#938577; --line:#e7ddd0;
+  --bg:#f4ede2; --card:#fffdf9; --green:#128a63; --radius:16px; --pill:999px;
+  --shadow:0 20px 45px -22px rgba(60,40,20,.45); --font:'Poppins',system-ui,sans-serif; --serif:'Fraunces',Georgia,serif;
+  --ease:cubic-bezier(.2,.7,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%}
+button{font-family:inherit;cursor:pointer;border:0}
+input,select,textarea{font-family:inherit;font-size:.9rem;color:var(--ink)}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:var(--pill);font-weight:600;font-size:.86rem;
+  transition:.2s var(--ease);background:#fff;color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+.btn:hover{transform:translateY(-1px)}
+.btn--gold{background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#fff;box-shadow:0 12px 24px -12px rgba(160,125,51,.8)}
+.btn--brand{background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;box-shadow:0 12px 24px -12px rgba(168,30,40,.7)}
+.btn--ghost{background:transparent;box-shadow:inset 0 0 0 1px var(--line)}
+.btn--sm{padding:8px 13px;font-size:.78rem}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* ---------- LOGIN ---------- */
+.login{min-height:100vh;display:grid;place-items:center;padding:24px;
+  background:radial-gradient(1200px 500px at 50% -10%,rgba(193,154,75,.18),transparent),var(--bg)}
+.login__card{width:min(400px,100%);background:var(--card);border-radius:22px;box-shadow:var(--shadow);
+  padding:38px 32px;text-align:center;border:1px solid var(--line)}
+.login__logo{font-family:var(--serif);font-weight:700;font-size:1.5rem;color:var(--brand);letter-spacing:.02em}
+.login__logo span{color:var(--gold-deep)}
+.login__sub{color:var(--ink-soft);font-size:.86rem;margin:6px 0 26px}
+.field{text-align:left;margin-bottom:16px}
+.field label{display:block;font-size:.76rem;font-weight:600;color:var(--ink-soft);margin-bottom:7px;letter-spacing:.02em}
+.field input,.field select,.field textarea{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:#fff;transition:.18s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(193,154,75,.15);outline:none}
+.field textarea{min-height:110px;resize:vertical;line-height:1.55}
+.login .btn{width:100%;justify-content:center;margin-top:4px}
+.err{color:var(--brand);font-size:.82rem;margin-top:12px;min-height:1em}
+
+/* ---------- TOPBAR ---------- */
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:14px;padding:14px 20px;
+  background:rgba(255,253,249,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.topbar__brand{font-family:var(--serif);font-weight:700;font-size:1.1rem;color:var(--brand)}
+.topbar__brand span{color:var(--gold-deep)}
+.topbar__spacer{flex:1}
+.dirty-dot{display:none;align-items:center;gap:7px;font-size:.78rem;color:var(--gold-deep);font-weight:600}
+.dirty-dot::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 4px rgba(193,154,75,.18)}
+body.dirty .dirty-dot{display:inline-flex}
+
+.wrap{max-width:1080px;margin:0 auto;padding:22px 20px 80px}
+.toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:20px}
+.toolbar input,.toolbar select{padding:10px 13px;border-radius:12px;border:1px solid var(--line);background:#fff}
+.toolbar .search{flex:1;min-width:180px}
+.count{font-size:.8rem;color:var(--ink-mute)}
+
+/* ---------- PRODUCT LIST ---------- */
+.grid{display:grid;gap:14px}
+.row{display:grid;grid-template-columns:64px 1fr auto;gap:14px;align-items:center;background:var(--card);
+  border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;box-shadow:0 10px 30px -24px rgba(60,40,20,.5)}
+.row__thumb{width:64px;height:64px;border-radius:12px;background:#fff;border:1px solid var(--line);overflow:hidden;display:grid;place-items:center}
+.row__thumb img{width:100%;height:100%;object-fit:contain;padding:5px}
+.row__info{min-width:0}
+.row__name{font-family:var(--serif);font-weight:600;font-size:1rem;line-height:1.2}
+.row__meta{display:flex;flex-wrap:wrap;gap:6px 10px;margin-top:5px;font-size:.78rem;color:var(--ink-soft)}
+.tag{background:rgba(193,154,75,.14);color:var(--gold-deep);padding:2px 9px;border-radius:var(--pill);font-weight:600;font-size:.72rem}
+.price{font-weight:600;color:var(--brand)}
+.price.ask{color:var(--ink-mute);font-weight:500}
+.row__actions{display:flex;align-items:center;gap:8px}
+
+/* stock switch */
+.switch{position:relative;display:inline-flex;align-items:center;gap:8px;cursor:pointer;user-select:none;font-size:.76rem;font-weight:600;color:var(--ink-soft)}
+.switch input{position:absolute;opacity:0;width:0;height:0}
+.switch .track{width:42px;height:24px;border-radius:var(--pill);background:#d8ccbb;transition:.2s;position:relative;flex:none}
+.switch .track::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 2px 5px rgba(0,0,0,.2)}
+.switch input:checked + .track{background:var(--green)}
+.switch input:checked + .track::after{transform:translateX(18px)}
+.switch .lbl-out{color:var(--brand)}
+
+/* ---------- MODAL ---------- */
+.modal{position:fixed;inset:0;z-index:50;display:grid;place-items:end center;background:rgba(36,28,23,.5);backdrop-filter:blur(3px)}
+.sheet{width:min(560px,100%);max-height:92vh;overflow:auto;background:var(--bg);border-radius:22px 22px 0 0;box-shadow:var(--shadow);
+  animation:up .25s var(--ease)}
+@media(min-width:640px){.modal{place-items:center}.sheet{border-radius:22px}}
+@keyframes up{from{transform:translateY(30px);opacity:.6}to{transform:none;opacity:1}}
+.sheet__head{position:sticky;top:0;background:var(--bg);display:flex;align-items:center;justify-content:space-between;
+  padding:18px 22px;border-bottom:1px solid var(--line)}
+.sheet__head h2{font-family:var(--serif);font-size:1.15rem}
+.sheet__x{width:34px;height:34px;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 1px var(--line);font-size:1.1rem;color:var(--ink-soft)}
+.sheet__body{padding:20px 22px}
+.imgblock{display:flex;gap:16px;align-items:center;margin-bottom:20px}
+.imgblock__preview{width:96px;height:96px;border-radius:14px;background:#fff;border:1px solid var(--line);overflow:hidden;display:grid;place-items:center;flex:none}
+.imgblock__preview img{width:100%;height:100%;object-fit:contain;padding:6px}
+.imgblock__side{flex:1}
+.imgblock__side small{display:block;color:var(--ink-mute);font-size:.74rem;margin-top:7px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.row-switch{display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:16px}
+.row-switch b{font-size:.85rem}
+.sheet__foot{position:sticky;bottom:0;background:var(--bg);display:flex;gap:10px;justify-content:flex-end;padding:16px 22px;border-top:1px solid var(--line)}
+.hidden-file{display:none}
+.spin{display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* toast */
+#toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);z-index:80;
+  background:var(--ink);color:#fff;padding:12px 20px;border-radius:var(--pill);font-size:.86rem;font-weight:500;
+  box-shadow:0 18px 40px -16px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:.28s var(--ease);max-width:90vw;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.err{background:var(--brand)}
+
+.empty{text-align:center;color:var(--ink-soft);padding:50px 20px}
+@media(max-width:560px){
+  .row{grid-template-columns:52px 1fr;grid-template-areas:"thumb info" "actions actions"}
+  .row__thumb{width:52px;height:52px;grid-area:thumb}.row__info{grid-area:info}
+  .row__actions{grid-area:actions;justify-content:space-between;padding-top:4px;border-top:1px solid var(--line)}
+  .grid2{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<section class="login" id="loginView">
+  <form class="login__card" id="loginForm">
+    <div class="login__logo">OĞUZCAN <span>YÖRESEL</span></div>
+    <p class="login__sub">Yönetim Paneli</p>
+    <div class="field">
+      <label for="pw">Yönetici Şifresi</label>
+      <input type="password" id="pw" autocomplete="current-password" placeholder="••••••••" required>
+    </div>
+    <button class="btn btn--brand" type="submit" id="loginBtn">Giriş Yap</button>
+    <div class="err" id="loginErr"></div>
+  </form>
+</section>
+
+<!-- APP -->
+<div id="appView" hidden>
+  <header class="topbar">
+    <div class="topbar__brand">OĞUZCAN <span>YÖRESEL</span></div>
+    <div class="topbar__spacer"></div>
+    <span class="dirty-dot">Kaydedilmemiş değişiklik</span>
+    <button class="btn btn--ghost btn--sm" id="newBtn">+ Yeni Ürün</button>
+    <button class="btn btn--gold btn--sm" id="publishBtn">Kaydet ve Yayınla</button>
+    <button class="btn btn--ghost btn--sm" id="logoutBtn">Çıkış</button>
+  </header>
+  <div class="wrap">
+    <div class="toolbar">
+      <input class="search" id="search" type="search" placeholder="Ürün ara…">
+      <select id="catFilter"><option value="">Tüm kategoriler</option></select>
+      <span class="count" id="count"></span>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div>
+</div>
+
+<!-- EDITOR MODAL -->
+<div class="modal" id="modal" hidden>
+  <div class="sheet">
+    <div class="sheet__head">
+      <h2 id="sheetTitle">Ürünü Düzenle</h2>
+      <button class="sheet__x" id="closeBtn" aria-label="Kapat">✕</button>
+    </div>
+    <div class="sheet__body">
+      <div class="imgblock">
+        <div class="imgblock__preview"><img id="prevImg" alt=""></div>
+        <div class="imgblock__side">
+          <button class="btn btn--ghost btn--sm" id="uploadBtn" type="button">Görsel Yükle</button>
+          <input type="file" accept="image/*" class="hidden-file" id="fileInput">
+          <small>PNG/JPG, en fazla 4 MB. Kare ve arka planı beyaz/şeffaf görseller en iyi görünür.</small>
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>Ürün Adı</label><input id="fName" placeholder="Domates Salçası"></div>
+        <div class="field"><label>Gramaj / Boyut</label><input id="fSize" placeholder="450 g"></div>
+        <div class="field"><label>Kategori</label><select id="fCat"></select></div>
+        <div class="field"><label>Fiyat (TL) — boş bırakılırsa "İletişime geçin"</label><input id="fPrice" type="number" min="0" step="1" placeholder="160"></div>
+      </div>
+      <div class="row-switch">
+        <b>Stok durumu</b>
+        <label class="switch"><input type="checkbox" id="fStock"><span class="track"></span><span id="stockLbl">Stokta var</span></label>
+      </div>
+      <div class="field"><label>Açıklama</label><textarea id="fDesc" placeholder="Ürün açıklaması…"></textarea></div>
+    </div>
+    <div class="sheet__foot">
+      <button class="btn btn--ghost" id="deleteBtn" type="button" style="margin-right:auto">Sil</button>
+      <button class="btn btn--ghost" id="cancelBtn" type="button">İptal</button>
+      <button class="btn btn--brand" id="okBtn" type="button">Tamam</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="assets/js/admin.js"></script>
+</body>
+</html>

@@ -232,6 +232,13 @@ h1{font-optical-sizing:auto}
   padding:10px 15px;border-radius:var(--pill);font-size:.8rem;font-weight:600;transition:.22s var(--ease);
   box-shadow:0 10px 22px -10px rgba(15,138,114,.7)}
 .card__buy:hover{transform:translateY(-2px);box-shadow:0 16px 28px -10px rgba(15,138,114,.8)}
+.card__buy--out{background:var(--line);color:var(--ink-mute);box-shadow:none;cursor:not-allowed;pointer-events:none;letter-spacing:.02em}
+/* out-of-stock treatment */
+.card__badge{position:absolute;top:12px;right:12px;background:var(--brand);color:#fff;
+  font-size:.64rem;font-weight:700;padding:6px 12px;border-radius:var(--pill);letter-spacing:.08em;text-transform:uppercase;
+  box-shadow:0 8px 18px -8px rgba(168,30,40,.7)}
+.card--out .card__media img{filter:grayscale(.55) opacity(.72)}
+.card--out .card__price{color:var(--ink-mute)}
 .empty{grid-column:1/-1;text-align:center;color:var(--ink-soft);padding:40px}
 
 /* ===== Values (vizyon/misyon) ===== */
