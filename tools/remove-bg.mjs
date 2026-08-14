@@ -6,19 +6,24 @@ import { fileURLToPath } from "node:url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const SRC = join(__dirname, "..", "site", "assets", "urunler");
 
-// A pixel counts as "background candidate" if it's near-white / light-neutral:
-// bright and low-saturation (so amber glass, red salça, brown pouch are safe).
+// Translucent glass bottles are handled by whiten-bottles.mjs — skip them here.
+const SKIP = new Set(["elma-sirkesi", "enginar-sirkesi", "ananas-sirkesi"]);
+
+// A pixel counts as "background candidate" if it's light + low-saturation.
+// Studio backgrounds here carry a subtle cool (bluish) tint, so we allow a
+// generous saturation window; real product colours (reds/oranges/kraft) are
+// far more saturated and stay safe.
 function isBg(r, g, b) {
   const min = Math.min(r, g, b);
   const max = Math.max(r, g, b);
-  return min >= 232 && (max - min) <= 16;
+  return min >= 224 && (max - min) <= 34;
 }
-// Slightly looser test used only for edge feathering.
+// Looser test used only for edge feathering.
 function whiteness(r, g, b) {
   const min = Math.min(r, g, b);
   const max = Math.max(r, g, b);
-  if (max - min > 26) return 0;
-  return Math.max(0, Math.min(1, (min - 214) / (248 - 214)));
+  if (max - min > 40) return 0;
+  return Math.max(0, Math.min(1, (min - 206) / (246 - 206)));
 }
 
 async function processOne(file) {
@@ -48,6 +53,40 @@ async function processOne(file) {
     if (x < w - 1) push(x + 1, y);
     if (y > 0) push(x, y - 1);
     if (y < h - 1) push(x, y + 1);
+  }
+
+  // Drop small disconnected islands (stray label-text fragments floating in
+  // the removed background). Keep only the largest connected blob of retained
+  // pixels — the actual product — and mark everything else as removed.
+  {
+    const label = new Int32Array(w * h).fill(-1);
+    const comp = stack; // reuse scratch buffer
+    let best = -1, bestSize = 0;
+    let cur = 0;
+    for (let s = 0; s < w * h; s++) {
+      if (removed[s] || label[s] !== -1) continue;
+      let head = 0, tail = 0;
+      comp[tail++] = s;
+      label[s] = cur;
+      while (head < tail) {
+        const p = comp[head++];
+        const x = p % w, y = (p / w) | 0;
+        const nb = [
+          x > 0 ? p - 1 : -1,
+          x < w - 1 ? p + 1 : -1,
+          y > 0 ? p - w : -1,
+          y < h - 1 ? p + w : -1,
+        ];
+        for (const q of nb) {
+          if (q >= 0 && !removed[q] && label[q] === -1) { label[q] = cur; comp[tail++] = q; }
+        }
+      }
+      if (tail > bestSize) { bestSize = tail; best = cur; }
+      cur++;
+    }
+    for (let p = 0; p < w * h; p++) {
+      if (!removed[p] && label[p] !== best) removed[p] = 1;
+    }
   }
 
   // Apply transparency + soft feather on the 1px halo bordering the product.
@@ -93,7 +132,7 @@ async function processOne(file) {
   console.log("ok:", basename(out), `${side}x${side}`);
 }
 
-const files = readdirSync(SRC).filter((f) => /\.jpe?g$/i.test(f));
+const files = readdirSync(SRC).filter((f) => /\.jpe?g$/i.test(f) && !SKIP.has(basename(f, extname(f))));
 console.log("processing", files.length, "images...");
 for (const f of files) await processOne(f);
 console.log("done.");

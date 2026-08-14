@@ -130,7 +130,9 @@ h1{font-optical-sizing:auto}
 .nav__cta::before{content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);
   width:1px;height:26px;background:linear-gradient(180deg,transparent,rgba(193,154,75,.5),transparent)}
 .nav__cta .btn{padding:9px 17px;font-size:.85rem;gap:7px}
-.nav__cta .btn svg{width:15px;height:15px;fill:currentColor;flex:none}
+.nav__cta .btn svg{width:15px;height:15px;flex:none}
+.nav__cta .btn--wa svg{fill:currentColor}
+.nav__cta .btn--ig svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .nav__cta .btn--ig{box-shadow:0 10px 24px -12px rgba(220,39,67,.6),inset 0 0 0 1px rgba(255,255,255,.18)}
 .nav__cta .btn--wa{box-shadow:0 10px 24px -12px rgba(15,138,114,.65),inset 0 0 0 1px rgba(255,255,255,.18)}
 .nav__cta .btn:hover{transform:translateY(-2px)}
