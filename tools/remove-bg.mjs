@@ -89,6 +89,43 @@ async function processOne(file) {
     }
   }
 
+  // Kill the soft contact shadow / mirror-reflection blob beneath the product.
+  // It's light-gray (too dark for isBg, so it survives) and glued to the jar
+  // base. Grow the removed region into low-saturation light-gray pixels — but
+  // ONLY in the lower part of the frame, so the (also-gray) lid up top is safe.
+  // Growth stops dead at the saturated/dark product body.
+  {
+    const yLimit = Math.round(h * 0.52);
+    const isShadow = (r, g, b) => {
+      const min = Math.min(r, g, b), max = Math.max(r, g, b);
+      return min >= 168 && (max - min) <= 44;
+    };
+    const q = stack; // reuse scratch buffer
+    let sp2 = 0;
+    // Seed: every removed pixel sitting in the lower band.
+    for (let y = yLimit; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const p = y * w + x;
+        if (removed[p]) q[sp2++] = p;
+      }
+    }
+    while (sp2 > 0) {
+      const p = q[--sp2];
+      const x = p % w, y = (p / w) | 0;
+      const tryGrow = (nx, ny) => {
+        if (ny < yLimit || ny >= h || nx < 0 || nx >= w) return;
+        const np = ny * w + nx;
+        if (removed[np]) return;
+        const i = np * 4;
+        if (!isShadow(data[i], data[i + 1], data[i + 2])) return;
+        removed[np] = 1;
+        q[sp2++] = np;
+      };
+      tryGrow(x - 1, y); tryGrow(x + 1, y);
+      tryGrow(x, y - 1); tryGrow(x, y + 1);
+    }
+  }
+
   // Apply transparency + soft feather on the 1px halo bordering the product.
   for (let p = 0; p < w * h; p++) {
     const i = p * 4;
