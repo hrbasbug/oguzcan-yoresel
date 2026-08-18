@@ -385,9 +385,61 @@ h1{font-optical-sizing:auto}
   .card__price{font-size:1.2rem}
 }
 
+/* ===== Legal / prose pages ===== */
+.legal{padding:56px 0 72px}
+.legal .container{max-width:860px}
+.legal__doc{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);
+  box-shadow:var(--shadow-sm);padding:clamp(24px,4vw,52px)}
+.legal__updated{color:var(--ink-mute);font-size:.82rem;margin-bottom:26px}
+.legal__doc h2{font-family:var(--serif);font-size:clamp(1.15rem,2.4vw,1.5rem);color:var(--ink);
+  margin:30px 0 12px;line-height:1.25}
+.legal__doc h2:first-of-type{margin-top:0}
+.legal__doc h3{font-size:1rem;font-weight:600;color:var(--ink);margin:20px 0 8px}
+.legal__doc p,.legal__doc li{color:var(--ink-soft);line-height:1.7;font-size:.95rem}
+.legal__doc p{margin-bottom:14px}
+.legal__doc ul,.legal__doc ol{margin:0 0 16px 22px}
+.legal__doc li{margin-bottom:7px}
+.legal__doc a{color:var(--gold-deep);text-decoration:underline;text-underline-offset:2px}
+.legal__doc strong{color:var(--ink)}
+.legal__info{background:var(--cream-2);border:1px solid var(--line);border-radius:var(--r);
+  padding:18px 20px;margin:0 0 26px}
+.legal__info table{width:100%;border-collapse:collapse;font-size:.9rem}
+.legal__info td{padding:6px 8px;vertical-align:top;color:var(--ink-soft)}
+.legal__info td:first-child{font-weight:600;color:var(--ink);white-space:nowrap;width:200px}
+@media(max-width:560px){.legal__info td{display:block;width:auto}.legal__info td:first-child{padding-bottom:0}}
+
+/* ===== Footer legal links + trust ===== */
+.footer__legal{display:flex;flex-wrap:wrap;gap:10px 22px;justify-content:center;
+  padding:22px 0 4px;border-top:1px solid rgba(255,255,255,.09)}
+.footer__legal a{color:#c9bcb0;font-size:.82rem;transition:color .2s}
+.footer__legal a:hover{color:#fff}
+.footer__pay{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;
+  padding:18px 0 2px;color:#8f8074;font-size:.8rem}
+.footer__pay svg{width:16px;height:16px;fill:#c19a4b;flex:none}
+.footer__kunye{text-align:center;color:#7d6f64;font-size:.76rem;line-height:1.6;padding:6px 0 0;max-width:760px;margin:0 auto}
+
+/* KDV note on products */
+.kdv-note{display:inline-flex;align-items:center;gap:8px;background:var(--cream-2);
+  border:1px solid var(--line);color:var(--ink-soft);font-size:.82rem;font-weight:500;
+  padding:9px 16px;border-radius:var(--pill);margin:0 auto 26px;width:max-content}
+.kdv-note svg{width:15px;height:15px;fill:var(--gold-deep);flex:none}
+
+/* ===== Cookie consent banner ===== */
+.cookie{position:fixed;left:16px;right:16px;bottom:16px;z-index:70;max-width:520px;margin:0 auto;
+  background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--r);
+  box-shadow:var(--shadow-lg);padding:18px 20px;display:flex;flex-direction:column;gap:12px;
+  transform:translateY(140%);transition:transform .45s var(--ease)}
+.cookie.show{transform:none}
+.cookie p{font-size:.86rem;color:var(--ink-soft);line-height:1.55;margin:0}
+.cookie a{color:var(--gold-deep);text-decoration:underline}
+.cookie__row{display:flex;gap:10px;flex-wrap:wrap}
+.cookie__row .btn{flex:1;justify-content:center;min-width:120px}
+@media(min-width:520px){.cookie{left:auto;right:24px;bottom:24px;margin:0}}
+
 /* ===== Reduced motion ===== */
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
   .reveal{opacity:1;transform:none}
   .hero__bg img{transform:none;animation:none}
+  .cookie{transition:none}
 }

@@ -101,6 +101,30 @@ function initNav(){
   }));
 }
 
+/* ---------- cookie consent ---------- */
+function initCookie(){
+  try{ if(localStorage.getItem("oym_cookie_consent")) return; }catch(_){ return; }
+  const bar = document.createElement("div");
+  bar.className = "cookie";
+  bar.setAttribute("role","dialog");
+  bar.setAttribute("aria-label","Çerez bildirimi");
+  bar.innerHTML = `
+    <p>Size daha iyi bir deneyim sunmak için çerezler kullanıyoruz. Detaylar için
+      <a href="cerez-politikasi.html">Çerez Politikası</a> sayfamızı inceleyebilirsiniz.</p>
+    <div class="cookie__row">
+      <button class="btn btn--ghost" data-cookie="red">Yalnızca gerekli</button>
+      <button class="btn btn--wa" data-cookie="acc">Kabul Et</button>
+    </div>`;
+  document.body.appendChild(bar);
+  requestAnimationFrame(()=>bar.classList.add("show"));
+  bar.addEventListener("click", e=>{
+    const b = e.target.closest("[data-cookie]"); if(!b) return;
+    try{ localStorage.setItem("oym_cookie_consent", b.dataset.cookie); }catch(_){}
+    bar.classList.remove("show");
+    setTimeout(()=>bar.remove(), 500);
+  });
+}
+
 /* ---------- scroll reveal ---------- */
 let _io;
 function observeReveal(){
@@ -115,6 +139,7 @@ function observeReveal(){
 
 document.addEventListener("DOMContentLoaded", async ()=>{
   initNav();
+  initCookie();
   const y = document.getElementById("year"); if(y) y.textContent = new Date().getFullYear();
   await loadData();
   initFilters();
