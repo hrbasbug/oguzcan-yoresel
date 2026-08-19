@@ -535,6 +535,25 @@ h1{font-optical-sizing:auto}
 }
 @media(max-width:520px){ .co-fields{grid-template-columns:1fr} }
 
+/* ===== FAQ ===== */
+.faq__item{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);margin-bottom:12px;overflow:hidden;transition:box-shadow .2s}
+.faq__item[open]{box-shadow:var(--shadow-sm)}
+.faq__item summary{cursor:pointer;padding:18px 22px;font-weight:600;color:var(--ink);font-size:.98rem;
+  list-style:none;display:flex;justify-content:space-between;align-items:center;gap:14px}
+.faq__item summary::-webkit-details-marker{display:none}
+.faq__item summary::after{content:"+";font-size:1.4rem;line-height:1;color:var(--gold-deep);flex:none;transition:transform .2s}
+.faq__item[open] summary::after{content:"−"}
+.faq__a{padding:0 22px 18px}
+.faq__a p{color:var(--ink-soft);line-height:1.7;font-size:.92rem;margin:0}
+.faq__a a{color:var(--gold-deep);text-decoration:underline}
+
+/* ===== SEO content ===== */
+.seo-content h2{font-family:var(--serif);font-size:clamp(1.3rem,3vw,1.8rem);color:var(--ink);margin-bottom:14px;line-height:1.25}
+.seo-content h3{font-size:1.08rem;color:var(--ink);margin:24px 0 8px;font-weight:600}
+.seo-content p{color:var(--ink-soft);line-height:1.8;margin-bottom:14px;font-size:.95rem}
+.seo-content strong{color:var(--ink)}
+.seo-content a{color:var(--gold-deep);text-decoration:underline;text-underline-offset:2px}
+
 /* ===== Reduced motion ===== */
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
