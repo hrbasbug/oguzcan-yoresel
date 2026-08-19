@@ -300,6 +300,54 @@ function initCookie(){
   });
 }
 
+/* ---------- SEO: client-injected structured data ---------- */
+function absUrl(u){ return /^https?:\/\//.test(u) ? u : (location.origin + "/" + String(u).replace(/^\//,"")); }
+function injectJsonLd(obj){
+  const s = document.createElement("script");
+  s.type = "application/ld+json";
+  s.textContent = JSON.stringify(obj);
+  document.head.appendChild(s);
+}
+function injectBreadcrumb(){
+  const crumbs = document.querySelector(".crumbs");
+  if(!crumbs) return;
+  const items = [];
+  crumbs.querySelectorAll("a").forEach(a=>items.push({ name:a.textContent.trim(), url:absUrl(a.getAttribute("href")) }));
+  const current = document.querySelector(".page-hero__inner h1")?.textContent.trim();
+  if(current) items.push({ name:current, url:location.href.split(/[?#]/)[0] });
+  if(items.length < 2) return;
+  injectJsonLd({
+    "@context":"https://schema.org", "@type":"BreadcrumbList",
+    itemListElement: items.map((it,i)=>({ "@type":"ListItem", position:i+1, name:it.name, item:it.url }))
+  });
+}
+function injectProductList(){
+  if(document.body.dataset.homeLimit) return;         // only the full product page
+  if(!document.getElementById("productGrid") || !PRODUCTS.length) return;
+  const items = PRODUCTS.map((p,i)=>{
+    const prod = {
+      "@type":"Product",
+      name: `${p.name} ${p.size}`.trim(),
+      image: absUrl(imgSrc(p.img)),
+      description: p.desc,
+      category: p.cat,
+      brand: { "@type":"Brand", name:"Oğuzcan Yöresel" }
+    };
+    if(hasPrice(p)){
+      prod.offers = {
+        "@type":"Offer",
+        price: String(p.price),
+        priceCurrency:"TRY",
+        availability: inStock(p) ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+        url: location.origin + "/urunler.html",
+        seller: { "@id":"https://oguzcanyoreselmarket.com/#store" }
+      };
+    }
+    return { "@type":"ListItem", position:i+1, item:prod };
+  });
+  injectJsonLd({ "@context":"https://schema.org", "@type":"ItemList", name:"Oğuzcan Yöresel Ürünleri", itemListElement:items });
+}
+
 /* ---------- scroll reveal ---------- */
 let _io;
 function observeReveal(){
@@ -322,10 +370,12 @@ document.addEventListener("DOMContentLoaded", async ()=>{
     const add = e.target.closest("[data-add]");
     if(add){ e.preventDefault(); cartAdd(add.dataset.add); }
   });
+  injectBreadcrumb();
   await loadData();
   initFilters();
   const limit = document.body.dataset.homeLimit ? Number(document.body.dataset.homeLimit) : null;
   renderProducts("Tümü", limit);
+  injectProductList();
   initCheckout();
   observeReveal();
 });

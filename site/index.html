@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Oğuzcan Yöresel | Gaziantep'in Doğal Lezzetleri</title>
 <meta name="description" content="Oğuzcan Yöresel — Gaziantep'in doğal salçaları, nar ekşisi, baharatları ve sirkeleri. Katkısız, el emeği, yöresel lezzetler kapınızda.">
-<meta name="robots" content="index, follow">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 <meta name="theme-color" content="#a81e28">
 <meta name="author" content="Oğuzcan Yöresel">
 <meta name="keywords" content="Oğuzcan Yöresel, Gaziantep salça, domates salçası, biber salçası, nar ekşisi, doğal baharat, isot, pul biber, yöresel ürünler, sirke">
@@ -25,22 +25,37 @@
 <meta name="twitter:description" content="Gaziantep'in doğal salçaları, nar ekşisi, baharatları ve sirkeleri. Katkısız, el emeği, yöresel lezzetler.">
 <meta name="twitter:image" content="https://oguzcanyoreselmarket.com/assets/og-image.jpg">
 <link rel="icon" href="assets/logo.jpeg">
+<link rel="apple-touch-icon" href="assets/logo.jpeg">
+<link rel="manifest" href="site.webmanifest">
+<link rel="preload" as="image" href="assets/genel/genel-3.jpeg" fetchpriority="high">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@graph": [
     {
-      "@type": "Store",
+      "@type": ["OnlineStore", "Organization"],
       "@id": "https://oguzcanyoreselmarket.com/#store",
       "name": "Oğuzcan Yöresel",
       "url": "https://oguzcanyoreselmarket.com/",
       "image": "https://oguzcanyoreselmarket.com/assets/og-image.jpg",
-      "logo": "https://oguzcanyoreselmarket.com/assets/logo.jpeg",
-      "description": "Gaziantep'in doğal, katkısız ve el emeği yöresel lezzetleri: salçalar, nar ekşisi, baharatlar ve sirkeler.",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://oguzcanyoreselmarket.com/assets/logo.jpeg"
+      },
+      "description": "Gaziantep'in doğal, katkısız ve el emeği yöresel lezzetleri: salçalar, nar ekşisi, baharatlar ve sirkeler. Türkiye geneline kargo.",
       "telephone": "+905305752060",
+      "email": "oguzcanyoreselmarket@gmail.com",
       "priceRange": "₺₺",
-      "address": { "@type": "PostalAddress", "addressLocality": "Gaziantep", "addressRegion": "Gaziantep", "addressCountry": "TR" },
-      "areaServed": "TR",
+      "currenciesAccepted": "TRY",
+      "paymentAccepted": "Kredi Kartı, Banka Kartı",
+      "address": { "@type": "PostalAddress", "addressCountry": "TR" },
+      "areaServed": { "@type": "Country", "name": "Türkiye" },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+905305752060",
+        "contactType": "customer service",
+        "availableLanguage": ["Turkish"]
+      },
       "sameAs": ["https://www.instagram.com/oguzcanyoreselmarket/", "https://wa.me/905305752060"]
     },
     {
