@@ -18,6 +18,7 @@ async function loadData(){
       const data = await r.json();
       if(data && Array.isArray(data.products)){
         PRODUCTS = data.products;
+        PRODUCTS.forEach((p,i)=>{ if(!p.id) p.id = "p"+(i+1); });
         if(Array.isArray(data.cats) && data.cats.length) CATS = data.cats;
         return;
       }
@@ -37,6 +38,175 @@ function orderMsg(p){
   const s = p.price!==null ? ` (${p.price} TL)` : "";
   return `Merhaba, ${p.name} ${p.size}${s} ürünü hakkında bilgi almak istiyorum.`;
 }
+const esc = (s)=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const hasPrice = (p)=> p.price!==null && p.price!==undefined && p.price!=="";
+
+/* ---------- cart ---------- */
+const CART_KEY = "oym_cart";
+function cartGet(){ try{ return JSON.parse(localStorage.getItem(CART_KEY))||[]; }catch(_){ return []; } }
+function cartSave(items){ try{ localStorage.setItem(CART_KEY, JSON.stringify(items)); }catch(_){} updateCartUI(); }
+function cartCount(){ return cartGet().reduce((n,i)=>n+i.qty,0); }
+function cartTotal(){ return cartGet().reduce((n,i)=>n+i.price*i.qty,0); }
+function cartAdd(id){
+  const p = PRODUCTS.find(x=>x.id===id);
+  if(!p || !hasPrice(p) || p.stock===false) return;
+  const items = cartGet();
+  const ex = items.find(i=>i.id===id);
+  if(ex) ex.qty += 1;
+  else items.push({ id:p.id, name:p.name, size:p.size, price:Number(p.price), img:p.img, qty:1 });
+  cartSave(items);
+  toast("Sepete eklendi ✓");
+  openCart();
+}
+function cartSetQty(id, qty){
+  let items = cartGet();
+  const it = items.find(i=>i.id===id); if(!it) return;
+  it.qty = Math.max(0, qty);
+  if(it.qty===0) items = items.filter(i=>i.id!==id);
+  cartSave(items);
+}
+function cartRemove(id){ cartSave(cartGet().filter(i=>i.id!==id)); }
+function cartClear(){ cartSave([]); }
+
+function toast(msg){
+  let t = document.getElementById("oymToast");
+  if(!t){ t=document.createElement("div"); t.id="oymToast"; t.className="toast"; document.body.appendChild(t); }
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove("show"),2200);
+}
+
+function cartInject(){
+  const cta = document.querySelector(".nav__cta");
+  if(cta && !document.getElementById("navCart")){
+    const btn = document.createElement("button");
+    btn.id="navCart"; btn.className="nav__cart"; btn.type="button"; btn.setAttribute("aria-label","Sepetim");
+    btn.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h15l-1.3 10.2a2 2 0 0 1-2 1.8H8.3a2 2 0 0 1-2-1.8L5 7z"/><path d="M8.5 7a3.5 3.5 0 0 1 7 0"/></svg><span class="nav__cart-badge" id="cartBadge">0</span>`;
+    cta.appendChild(btn);
+    btn.addEventListener("click", openCart);
+  }
+  if(!document.getElementById("cartPanel")){
+    const wrap = document.createElement("div");
+    wrap.innerHTML = `
+      <div class="cart-overlay" id="cartOverlay"></div>
+      <aside class="cart" id="cartPanel" aria-label="Sepetim">
+        <header class="cart__head"><h3>Sepetim</h3><button class="cart__close" id="cartClose" type="button" aria-label="Kapat">✕</button></header>
+        <div class="cart__body" id="cartItems"></div>
+        <footer class="cart__foot" id="cartFoot"></footer>
+      </aside>`;
+    document.body.appendChild(wrap);
+    document.getElementById("cartOverlay").addEventListener("click", closeCart);
+    document.getElementById("cartClose").addEventListener("click", closeCart);
+    document.getElementById("cartItems").addEventListener("click", onCartClick);
+  }
+  updateCartUI();
+}
+function openCart(){ renderCart(); document.getElementById("cartPanel")?.classList.add("open"); document.getElementById("cartOverlay")?.classList.add("show"); document.body.style.overflow="hidden"; }
+function closeCart(){ document.getElementById("cartPanel")?.classList.remove("open"); document.getElementById("cartOverlay")?.classList.remove("show"); document.body.style.overflow=""; }
+function onCartClick(e){
+  const b = e.target.closest("[data-act]"); if(!b) return;
+  const id = b.dataset.id;
+  const it = cartGet().find(i=>i.id===id);
+  if(b.dataset.act==="inc") cartSetQty(id,(it?.qty||0)+1);
+  else if(b.dataset.act==="dec") cartSetQty(id,(it?.qty||0)-1);
+  else if(b.dataset.act==="rm") cartRemove(id);
+  renderCart();
+}
+function updateCartUI(){
+  const badge = document.getElementById("cartBadge");
+  const c = cartCount();
+  if(badge){ badge.textContent = c; badge.classList.toggle("has", c>0); }
+  if(document.getElementById("checkoutRoot")) renderCheckout();
+}
+function renderCart(){
+  const body = document.getElementById("cartItems");
+  const foot = document.getElementById("cartFoot");
+  if(!body) return;
+  const items = cartGet();
+  if(!items.length){
+    body.innerHTML = `<div class="cart__empty"><p>Sepetiniz henüz boş.</p><a class="btn btn--primary" href="urunler.html">Ürünlere Göz At</a></div>`;
+    foot.innerHTML=""; return;
+  }
+  body.innerHTML = items.map(i=>`
+    <div class="cart-item">
+      <div class="cart-item__img"><img src="${imgSrc(i.img)}" alt="${esc(i.name)}"></div>
+      <div class="cart-item__info">
+        <div class="cart-item__name">${esc(i.name)}</div>
+        <div class="cart-item__size">${esc(i.size)}</div>
+        <div class="cart-item__price">${i.price} TL</div>
+      </div>
+      <div class="cart-item__qty">
+        <button type="button" data-act="dec" data-id="${i.id}" aria-label="Azalt">−</button>
+        <span>${i.qty}</span>
+        <button type="button" data-act="inc" data-id="${i.id}" aria-label="Artır">+</button>
+      </div>
+      <button class="cart-item__rm" type="button" data-act="rm" data-id="${i.id}" aria-label="Kaldır">✕</button>
+    </div>`).join("");
+  foot.innerHTML = `
+    <div class="cart__total"><span>Toplam</span><b>${cartTotal()} TL</b></div>
+    <a class="btn btn--primary cart__checkout" href="odeme.html">Ödemeye Geç</a>
+    <p class="cart__note">Fiyatlara KDV dahildir. Ödemeler iyzico ile güvenle alınır.</p>`;
+}
+
+/* ---------- checkout (odeme.html) ---------- */
+function renderCheckout(){
+  const sum = document.getElementById("coSummary");
+  if(!sum) return;
+  const items = cartGet();
+  const empty = document.getElementById("coEmpty");
+  const main = document.getElementById("coMain");
+  if(!items.length){
+    if(empty) empty.style.display="";
+    if(main) main.style.display="none";
+    return;
+  }
+  if(empty) empty.style.display="none";
+  if(main) main.style.display="";
+  sum.innerHTML = items.map(i=>`
+    <div class="co-line">
+      <img src="${imgSrc(i.img)}" alt="${esc(i.name)}">
+      <div class="co-line__info"><span class="co-line__name">${esc(i.name)}</span><span class="co-line__meta">${esc(i.size)} × ${i.qty}</span></div>
+      <span class="co-line__price">${i.price*i.qty} TL</span>
+    </div>`).join("");
+  const t = document.getElementById("coTotal");
+  if(t) t.textContent = cartTotal()+" TL";
+}
+function initCheckout(){
+  const root = document.getElementById("checkoutRoot");
+  if(!root) return;
+  renderCheckout();
+  const form = document.getElementById("coForm");
+  form?.addEventListener("submit", (e)=>{
+    e.preventDefault();
+    const items = cartGet();
+    if(!items.length){ toast("Sepetiniz boş."); return; }
+    const d = Object.fromEntries(new FormData(form).entries());
+    const method = d.payment || "iyzico";
+    const lines = items.map(i=>`• ${i.name} ${i.size} x${i.qty} = ${i.price*i.qty} TL`).join("\n");
+    const txt = `Merhaba, sipariş vermek istiyorum.\n\n${lines}\n\nTOPLAM: ${cartTotal()} TL\n\nAd Soyad: ${d.name}\nTelefon: ${d.phone}\nE-posta: ${d.email||"-"}\nAdres: ${d.address||""} ${d.city||""}\nÖdeme yöntemi: ${method==="iyzico"?"Kredi/Banka Kartı (iyzico)":"WhatsApp"}`;
+    const url = waLink(txt);
+    // Online card payment (iyzico) activates once the merchant is approved and
+    // API keys are configured. Until then the order is confirmed via WhatsApp.
+    const success = document.getElementById("coSuccess");
+    const main = document.getElementById("coMain");
+    if(success && main){
+      main.style.display="none";
+      success.style.display="";
+      success.innerHTML = `
+        <div class="co-success__box">
+          <div class="co-success__ico">✓</div>
+          <h2>Siparişiniz alındı</h2>
+          <p>${method==="iyzico"
+            ? "Kart ile online ödeme çok yakında aktif olacak. Siparişinizi onaylamak için WhatsApp'a yönlendiriliyorsunuz."
+            : "Siparişinizi onaylamak için WhatsApp'a yönlendiriliyorsunuz."}</p>
+          <a class="btn btn--wa" href="${url}" target="_blank" rel="noopener">WhatsApp'ta Onayla</a>
+          <a class="btn btn--ghost" href="urunler.html">Alışverişe Devam Et</a>
+        </div>`;
+    }
+    window.open(url, "_blank");
+    cartClear();
+    window.scrollTo({top:0,behavior:"smooth"});
+  });
+}
 
 /* ---------- render products ---------- */
 function renderProducts(cat="Tümü", limit=null){
@@ -47,12 +217,17 @@ function renderProducts(cat="Tümü", limit=null){
   if(!list.length){ wrap.innerHTML = `<p class="empty">Bu kategoride ürün bulunamadı.</p>`; return; }
   wrap.innerHTML = list.map(p=>{
     const out = !inStock(p);
-    const buy = out
-      ? `<span class="card__buy card__buy--out" aria-disabled="true">Tükendi</span>`
-      : `<a class="card__buy" href="${waLink(orderMsg(p))}" target="_blank" rel="noopener" aria-label="${p.name} sipariş">
-            <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.945C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zM6.597 20.13c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.82 9.82 0 001.599 5.334l-.999 3.648 3.9-.881zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-            Sipariş
-          </a>`;
+    let buy;
+    if(out){
+      buy = `<span class="card__buy card__buy--out" aria-disabled="true">Tükendi</span>`;
+    } else if(!hasPrice(p)){
+      buy = `<a class="card__buy card__buy--ask" href="${waLink(orderMsg(p))}" target="_blank" rel="noopener" aria-label="${esc(p.name)} fiyat sor">Fiyat Sor</a>`;
+    } else {
+      buy = `<button class="card__buy" type="button" data-add="${p.id}" aria-label="${esc(p.name)} sepete ekle">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h15l-1.3 10.2a2 2 0 0 1-2 1.8H8.3a2 2 0 0 1-2-1.8L5 7z"/><path d="M8.5 7a3.5 3.5 0 0 1 7 0"/></svg>
+            Sepete Ekle
+          </button>`;
+    }
     return `
     <article class="card reveal${out ? " card--out" : ""}">
       <div class="card__media">
@@ -140,10 +315,17 @@ function observeReveal(){
 document.addEventListener("DOMContentLoaded", async ()=>{
   initNav();
   initCookie();
+  cartInject();
   const y = document.getElementById("year"); if(y) y.textContent = new Date().getFullYear();
+  // add-to-cart delegation (works wherever product cards render)
+  document.addEventListener("click", (e)=>{
+    const add = e.target.closest("[data-add]");
+    if(add){ e.preventDefault(); cartAdd(add.dataset.add); }
+  });
   await loadData();
   initFilters();
   const limit = document.body.dataset.homeLimit ? Number(document.body.dataset.homeLimit) : null;
   renderProducts("Tümü", limit);
+  initCheckout();
   observeReveal();
 });
