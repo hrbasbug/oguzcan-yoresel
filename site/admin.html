@@ -88,6 +88,7 @@ body.dirty .dirty-dot{display:inline-flex}
 
 /* ---------- MODAL ---------- */
 .modal{position:fixed;inset:0;z-index:50;display:grid;place-items:end center;background:rgba(36,28,23,.5);backdrop-filter:blur(3px)}
+.modal[hidden]{display:none}
 .sheet{width:min(560px,100%);max-height:92vh;overflow:auto;background:var(--bg);border-radius:22px 22px 0 0;box-shadow:var(--shadow);
   animation:up .25s var(--ease)}
 @media(min-width:640px){.modal{place-items:center}.sheet{border-radius:22px}}
