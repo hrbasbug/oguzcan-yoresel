@@ -175,17 +175,12 @@ function initCheckout(){
   if(!root) return;
   renderCheckout();
   const form = document.getElementById("coForm");
-  form?.addEventListener("submit", (e)=>{
-    e.preventDefault();
-    const items = cartGet();
-    if(!items.length){ toast("Sepetiniz boş."); return; }
-    const d = Object.fromEntries(new FormData(form).entries());
-    const method = d.payment || "iyzico";
+  if(!form) return;
+
+  function completeViaWhatsApp(items, d, note){
     const lines = items.map(i=>`• ${i.name} ${i.size} x${i.qty} = ${i.price*i.qty} TL`).join("\n");
-    const txt = `Merhaba, sipariş vermek istiyorum.\n\n${lines}\n\nTOPLAM: ${cartTotal()} TL\n\nAd Soyad: ${d.name}\nTelefon: ${d.phone}\nE-posta: ${d.email||"-"}\nAdres: ${d.address||""} ${d.city||""}\nÖdeme yöntemi: ${method==="iyzico"?"Kredi/Banka Kartı (iyzico)":"WhatsApp"}`;
+    const txt = `Merhaba, sipariş vermek istiyorum.\n\n${lines}\n\nTOPLAM: ${cartTotal()} TL\n\nAd Soyad: ${d.name}\nTelefon: ${d.phone}\nE-posta: ${d.email||"-"}\nAdres: ${d.address||""} ${d.city||""}`;
     const url = waLink(txt);
-    // Online card payment (iyzico) activates once the merchant is approved and
-    // API keys are configured. Until then the order is confirmed via WhatsApp.
     const success = document.getElementById("coSuccess");
     const main = document.getElementById("coMain");
     if(success && main){
@@ -195,9 +190,7 @@ function initCheckout(){
         <div class="co-success__box">
           <div class="co-success__ico">✓</div>
           <h2>Siparişiniz alındı</h2>
-          <p>${method==="iyzico"
-            ? "Kart ile online ödeme çok yakında aktif olacak. Siparişinizi onaylamak için WhatsApp'a yönlendiriliyorsunuz."
-            : "Siparişinizi onaylamak için WhatsApp'a yönlendiriliyorsunuz."}</p>
+          <p>${note || "Siparişinizi onaylamak için WhatsApp'a yönlendiriliyorsunuz."}</p>
           <a class="btn btn--wa" href="${url}" target="_blank" rel="noopener">WhatsApp'ta Onayla</a>
           <a class="btn btn--ghost" href="urunler.html">Alışverişe Devam Et</a>
         </div>`;
@@ -205,7 +198,62 @@ function initCheckout(){
     window.open(url, "_blank");
     cartClear();
     window.scrollTo({top:0,behavior:"smooth"});
+  }
+
+  form.addEventListener("submit", async (e)=>{
+    e.preventDefault();
+    const items = cartGet();
+    if(!items.length){ toast("Sepetiniz boş."); return; }
+    const d = Object.fromEntries(new FormData(form).entries());
+    const method = d.payment || "iyzico";
+    const submitBtn = form.querySelector('[type="submit"]');
+
+    if(method === "iyzico"){
+      const orig = submitBtn ? submitBtn.innerHTML : "";
+      if(submitBtn){ submitBtn.disabled = true; submitBtn.innerHTML = '<span class="spin"></span> Güvenli ödemeye yönlendiriliyor…'; }
+      try{
+        const r = await fetch("/api/checkout", {
+          method:"POST", headers:{"Content-Type":"application/json"},
+          body: JSON.stringify({ items, buyer:{ name:d.name, phone:d.phone, email:d.email, address:d.address, city:d.city } })
+        });
+        const res = await r.json().catch(()=>({}));
+        if(res && res.ok && res.paymentPageUrl){ window.location.href = res.paymentPageUrl; return; }
+        if(res && res.configured === false){
+          completeViaWhatsApp(items, d, "Online kart ödemesi henüz aktifleştiriliyor. Siparişinizi onaylamak için WhatsApp'a yönlendiriliyorsunuz.");
+          return;
+        }
+        toast((res && res.error) || "Ödeme başlatılamadı. Lütfen tekrar deneyin.");
+        if(submitBtn){ submitBtn.disabled=false; submitBtn.innerHTML=orig; }
+      }catch(_){
+        completeViaWhatsApp(items, d, "Ödeme sunucusuna ulaşılamadı. Siparişinizi WhatsApp'tan tamamlayabilirsiniz.");
+      }
+      return;
+    }
+
+    completeViaWhatsApp(items, d);
   });
+}
+
+/* ---------- payment result (odeme-sonuc.html) ---------- */
+function initPaymentResult(){
+  const root = document.getElementById("paymentResult");
+  if(!root) return;
+  const ok = new URLSearchParams(location.search).get("status") === "success";
+  if(ok) cartClear();
+  root.innerHTML = ok
+    ? `<div class="co-success__box">
+         <div class="co-success__ico">✓</div>
+         <h2>Ödemeniz alındı</h2>
+         <p>Siparişiniz için teşekkür ederiz! Ödemeniz başarıyla tamamlandı. Siparişiniz en kısa sürede hazırlanıp kargoya verilecektir.</p>
+         <a class="btn btn--primary" href="urunler.html">Alışverişe Devam Et</a>
+       </div>`
+    : `<div class="co-success__box">
+         <div class="co-success__ico" style="background:var(--brand)">✕</div>
+         <h2>Ödeme tamamlanamadı</h2>
+         <p>Ödeme sırasında bir sorun oluştu veya işlem iptal edildi. Sepetiniz korunuyor; tekrar deneyebilir ya da WhatsApp üzerinden sipariş verebilirsiniz.</p>
+         <a class="btn btn--primary" href="odeme.html">Tekrar Dene</a>
+         <a class="btn btn--wa" href="${waLink("Merhaba, sipariş vermek istiyorum.")}" target="_blank" rel="noopener">WhatsApp'tan Sipariş</a>
+       </div>`;
 }
 
 /* ---------- render products ---------- */
@@ -377,5 +425,6 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   renderProducts("Tümü", limit);
   injectProductList();
   initCheckout();
+  initPaymentResult();
   observeReveal();
 });
