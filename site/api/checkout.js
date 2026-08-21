@@ -21,7 +21,10 @@ export default async function handler(req, res) {
   const now = Date.now();
   const convId = newOrderId();
 
-  const total = items.reduce((n, i) => n + Number(i.price) * Number(i.qty), 0);
+  const SHIP_FREE_MIN = 1500, SHIP_FEE = 180;
+  const subtotal = items.reduce((n, i) => n + Number(i.price) * Number(i.qty), 0);
+  const shipping = subtotal > 0 && subtotal < SHIP_FREE_MIN ? SHIP_FEE : 0;
+  const total = subtotal + shipping;
   const priceStr = total.toFixed(2);
 
   const fullName = String(buyer.name || "Musteri").trim();
@@ -62,13 +65,22 @@ export default async function handler(req, res) {
     },
     shippingAddress: addr,
     billingAddress: addr,
-    basketItems: items.map((i, idx) => ({
-      id: String(i.id || "P" + idx),
-      name: `${i.name || "Ürün"} ${i.size || ""}`.trim().slice(0, 100),
-      category1: String(i.cat || "Gıda"),
-      itemType: Iyzipay.BASKET_ITEM_TYPE.PHYSICAL,
-      price: (Number(i.price) * Number(i.qty)).toFixed(2),
-    })),
+    basketItems: [
+      ...items.map((i, idx) => ({
+        id: String(i.id || "P" + idx),
+        name: `${i.name || "Ürün"} ${i.size || ""}`.trim().slice(0, 100),
+        category1: String(i.cat || "Gıda"),
+        itemType: Iyzipay.BASKET_ITEM_TYPE.PHYSICAL,
+        price: (Number(i.price) * Number(i.qty)).toFixed(2),
+      })),
+      ...(shipping > 0 ? [{
+        id: "KARGO",
+        name: "Kargo Ücreti",
+        category1: "Kargo",
+        itemType: Iyzipay.BASKET_ITEM_TYPE.PHYSICAL,
+        price: shipping.toFixed(2),
+      }] : []),
+    ],
   };
 
   return new Promise((resolve) => {
@@ -94,6 +106,8 @@ export default async function handler(req, res) {
           stage: "yeni",
           buyer: { name: fullName, phone: buyer.phone || "", email: buyer.email || "", address: address, city: city },
           items: items.map((i) => ({ name: i.name, size: i.size, qty: Number(i.qty), price: Number(i.price) })),
+          subtotal: subtotal,
+          shipping: shipping,
           total: total,
           currency: "TRY",
         });

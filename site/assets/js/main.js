@@ -43,10 +43,15 @@ const hasPrice = (p)=> p.price!==null && p.price!==undefined && p.price!=="";
 
 /* ---------- cart ---------- */
 const CART_KEY = "oym_cart";
+const SHIP_FREE_MIN = 1500;   // bu tutar ve üzeri: ücretsiz kargo
+const SHIP_FEE = 180;         // altında: sabit kargo ücreti
 function cartGet(){ try{ return JSON.parse(localStorage.getItem(CART_KEY))||[]; }catch(_){ return []; } }
 function cartSave(items){ try{ localStorage.setItem(CART_KEY, JSON.stringify(items)); }catch(_){} updateCartUI(); }
 function cartCount(){ return cartGet().reduce((n,i)=>n+i.qty,0); }
 function cartTotal(){ return cartGet().reduce((n,i)=>n+i.price*i.qty,0); }
+function shippingFor(subtotal){ return subtotal>0 && subtotal<SHIP_FREE_MIN ? SHIP_FEE : 0; }
+function cartShipping(){ return shippingFor(cartTotal()); }
+function cartGrand(){ return cartTotal() + cartShipping(); }
 function cartAdd(id){
   const p = PRODUCTS.find(x=>x.id===id);
   if(!p || !hasPrice(p) || p.stock===false) return;
@@ -141,8 +146,15 @@ function renderCart(){
       </div>
       <button class="cart-item__rm" type="button" data-act="rm" data-id="${i.id}" aria-label="Kaldır">✕</button>
     </div>`).join("");
+  const sub = cartTotal(), ship = cartShipping(), remain = SHIP_FREE_MIN - sub;
+  const hint = ship>0
+    ? `<div class="cart__ship-hint">🚚 <b>${remain} TL</b> daha ekleyin, <b>kargo bedava!</b></div>`
+    : `<div class="cart__ship-hint ok">🎉 Kargo <b>bedava!</b></div>`;
   foot.innerHTML = `
-    <div class="cart__total"><span>Toplam</span><b>${cartTotal()} TL</b></div>
+    ${hint}
+    <div class="cart__line"><span>Ara toplam</span><span>${sub} TL</span></div>
+    <div class="cart__line"><span>Kargo</span><span>${ship===0 ? "Ücretsiz" : ship+" TL"}</span></div>
+    <div class="cart__total"><span>Toplam</span><b>${cartGrand()} TL</b></div>
     <a class="btn btn--primary cart__checkout" href="odeme.html">Ödemeye Geç</a>
     <p class="cart__note">Fiyatlara KDV dahildir. Ödemeler iyzico ile güvenle alınır.</p>`;
 }
@@ -167,8 +179,19 @@ function renderCheckout(){
       <div class="co-line__info"><span class="co-line__name">${esc(i.name)}</span><span class="co-line__meta">${esc(i.size)} × ${i.qty}</span></div>
       <span class="co-line__price">${i.price*i.qty} TL</span>
     </div>`).join("");
+  const sub = cartTotal(), ship = cartShipping();
+  const totals = document.getElementById("coTotals");
+  if(totals){
+    totals.innerHTML = `
+      <div class="co-line2"><span>Ara toplam</span><span>${sub} TL</span></div>
+      <div class="co-line2"><span>Kargo</span><span>${ship===0 ? "Ücretsiz" : ship+" TL"}</span></div>
+      <div class="co-total"><span>Toplam</span><b>${sub+ship} TL</b></div>
+      ${ship>0
+        ? `<p class="co-shiphint">🚚 ${SHIP_FREE_MIN-sub} TL daha ekleyin, kargo <b>bedava</b>.</p>`
+        : `<p class="co-shiphint ok">🎉 Kargonuz <b>ücretsiz</b>.</p>`}`;
+  }
   const t = document.getElementById("coTotal");
-  if(t) t.textContent = cartTotal()+" TL";
+  if(t) t.textContent = (sub+ship)+" TL";
 }
 function initCheckout(){
   const root = document.getElementById("checkoutRoot");
@@ -179,7 +202,9 @@ function initCheckout(){
 
   function completeViaWhatsApp(items, d, note){
     const lines = items.map(i=>`• ${i.name} ${i.size} x${i.qty} = ${i.price*i.qty} TL`).join("\n");
-    const txt = `Merhaba, sipariş vermek istiyorum.\n\n${lines}\n\nTOPLAM: ${cartTotal()} TL\n\nAd Soyad: ${d.name}\nTelefon: ${d.phone}\nE-posta: ${d.email||"-"}\nAdres: ${d.address||""} ${d.city||""}`;
+    const sub = cartTotal(), ship = cartShipping();
+    const shipTxt = ship===0 ? "Ücretsiz" : ship+" TL";
+    const txt = `Merhaba, sipariş vermek istiyorum.\n\n${lines}\n\nAra toplam: ${sub} TL\nKargo: ${shipTxt}\nTOPLAM: ${sub+ship} TL\n\nAd Soyad: ${d.name}\nTelefon: ${d.phone}\nE-posta: ${d.email||"-"}\nAdres: ${d.address||""} ${d.city||""}`;
     const url = waLink(txt);
     // Record the WhatsApp order so it also appears in the admin panel (best-effort).
     try{

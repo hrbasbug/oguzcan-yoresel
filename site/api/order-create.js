@@ -12,7 +12,10 @@ export default async function handler(req, res) {
   if (!items.length || (!buyer.name && !buyer.phone)) {
     return sendJson(res, 400, { error: "Eksik sipariş bilgisi." });
   }
-  const total = items.reduce((n, i) => n + Number(i.price) * Number(i.qty), 0);
+  const SHIP_FREE_MIN = 1500, SHIP_FEE = 180;
+  const subtotal = items.reduce((n, i) => n + Number(i.price) * Number(i.qty), 0);
+  const shipping = subtotal > 0 && subtotal < SHIP_FREE_MIN ? SHIP_FEE : 0;
+  const total = subtotal + shipping;
   const id = newOrderId();
   try {
     await saveOrder({
@@ -29,6 +32,8 @@ export default async function handler(req, res) {
         city: String(buyer.city || "").slice(0, 80),
       },
       items: items.map((i) => ({ name: i.name, size: i.size, qty: Number(i.qty), price: Number(i.price) })),
+      subtotal,
+      shipping,
       total,
       currency: "TRY",
     });

@@ -405,6 +405,9 @@ function renderOrders() {
         <div class="order__items">
           <p class="lbl" style="color:var(--ink-mute);font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Ürünler</p>
           <table>${items}</table>
+          ${o.subtotal !== undefined ? `
+          <div class="order__subline"><span>Ara toplam</span><span>${o.subtotal} TL</span></div>
+          <div class="order__subline"><span>Kargo</span><span>${o.shipping === 0 ? "Ücretsiz" : (o.shipping || 0) + " TL"}</span></div>` : ""}
           <div class="order__total"><span>Toplam</span><b>${o.total} TL</b></div>
         </div>
       </div>
