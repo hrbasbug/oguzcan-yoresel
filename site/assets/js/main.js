@@ -181,6 +181,13 @@ function initCheckout(){
     const lines = items.map(i=>`• ${i.name} ${i.size} x${i.qty} = ${i.price*i.qty} TL`).join("\n");
     const txt = `Merhaba, sipariş vermek istiyorum.\n\n${lines}\n\nTOPLAM: ${cartTotal()} TL\n\nAd Soyad: ${d.name}\nTelefon: ${d.phone}\nE-posta: ${d.email||"-"}\nAdres: ${d.address||""} ${d.city||""}`;
     const url = waLink(txt);
+    // Record the WhatsApp order so it also appears in the admin panel (best-effort).
+    try{
+      fetch("/api/order-create", {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ items, buyer:{ name:d.name, phone:d.phone, email:d.email, address:d.address, city:d.city } })
+      }).catch(()=>{});
+    }catch(_){}
     const success = document.getElementById("coSuccess");
     const main = document.getElementById("coMain");
     if(success && main){

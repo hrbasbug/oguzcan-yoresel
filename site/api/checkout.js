@@ -1,5 +1,6 @@
 import { iyzicoClient, Iyzipay } from "../lib/iyzico.js";
 import { readJson, sendJson, originOf } from "../lib/util.js";
+import { saveOrder, newOrderId } from "../lib/orders.js";
 
 export const config = { api: { bodyParser: false } };
 
@@ -18,7 +19,7 @@ export default async function handler(req, res) {
   const buyer = body.buyer || {};
   const origin = originOf(req);
   const now = Date.now();
-  const convId = "oym-" + now;
+  const convId = newOrderId();
 
   const total = items.reduce((n, i) => n + Number(i.price) * Number(i.qty), 0);
   const priceStr = total.toFixed(2);
@@ -71,7 +72,7 @@ export default async function handler(req, res) {
   };
 
   return new Promise((resolve) => {
-    iy.checkoutFormInitialize.create(request, (err, result) => {
+    iy.checkoutFormInitialize.create(request, async (err, result) => {
       if (err) {
         sendJson(res, 502, { error: "Ödeme başlatılamadı.", detail: String(err) });
         return resolve();
@@ -83,6 +84,20 @@ export default async function handler(req, res) {
         });
         return resolve();
       }
+      // Record the order as pending; payment-callback flips it to paid/failed.
+      try {
+        await saveOrder({
+          id: convId,
+          createdAt: now,
+          status: "pending",
+          method: "iyzico",
+          stage: "yeni",
+          buyer: { name: fullName, phone: buyer.phone || "", email: buyer.email || "", address: address, city: city },
+          items: items.map((i) => ({ name: i.name, size: i.size, qty: Number(i.qty), price: Number(i.price) })),
+          total: total,
+          currency: "TRY",
+        });
+      } catch { /* order logging is best-effort */ }
       sendJson(res, 200, { ok: true, paymentPageUrl: result.paymentPageUrl, token: result.token });
       resolve();
     });

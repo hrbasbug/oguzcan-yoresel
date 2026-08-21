@@ -1,5 +1,6 @@
 import { iyzicoClient, Iyzipay } from "../lib/iyzico.js";
 import { readRawBody } from "../lib/util.js";
+import { getOrder, saveOrder } from "../lib/orders.js";
 
 export const config = { api: { bodyParser: false } };
 
@@ -25,8 +26,28 @@ export default async function handler(req, res) {
   if (!iy || !token) return redirect("fail");
 
   return new Promise((resolve) => {
-    iy.checkoutForm.retrieve({ locale: Iyzipay.LOCALE.TR, token }, (err, result) => {
+    iy.checkoutForm.retrieve({ locale: Iyzipay.LOCALE.TR, token }, async (err, result) => {
       const ok = !err && result && result.status === "success" && result.paymentStatus === "SUCCESS";
+      // Update the stored order with the payment outcome.
+      try {
+        const id = result && result.basketId;
+        if (id) {
+          const order = await getOrder(id);
+          if (order) {
+            order.status = ok ? "paid" : "failed";
+            order.paidAt = ok ? Date.now() : null;
+            order.payment = {
+              paymentId: result.paymentId || null,
+              paidPrice: result.paidPrice || null,
+              cardType: result.cardType || null,
+              cardAssociation: result.cardAssociation || null,
+              lastFour: result.lastFourDigits || null,
+              installment: result.installment || 1,
+            };
+            await saveOrder(order);
+          }
+        }
+      } catch { /* best-effort */ }
       redirect(ok ? "success" : "fail");
       resolve();
     });

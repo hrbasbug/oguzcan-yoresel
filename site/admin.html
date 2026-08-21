@@ -119,6 +119,42 @@ body.dirty .dirty-dot{display:inline-flex}
 #toast.err{background:var(--brand)}
 
 .empty{text-align:center;color:var(--ink-soft);padding:50px 20px}
+
+/* tabs */
+.tabs{display:inline-flex;gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:var(--pill);padding:3px;margin-left:8px}
+.tab{background:none;border-radius:var(--pill);padding:7px 16px;font-size:.82rem;font-weight:600;color:var(--ink-soft);display:inline-flex;align-items:center;gap:6px}
+.tab.active{background:var(--brand);color:#fff}
+.tab__badge{background:var(--gold);color:#fff;font-size:.68rem;font-weight:700;min-width:18px;height:18px;border-radius:var(--pill);display:inline-flex;align-items:center;justify-content:center;padding:0 5px}
+.tab.active .tab__badge{background:#fff;color:var(--brand)}
+
+/* orders */
+.orders-stats{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:18px}
+.ostat{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px 18px;box-shadow:0 10px 30px -24px rgba(60,40,20,.5)}
+.ostat b{display:block;font-family:var(--serif);font-size:1.5rem;color:var(--ink)}
+.ostat span{font-size:.76rem;color:var(--ink-mute)}
+.order{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;margin-bottom:14px;box-shadow:0 10px 30px -24px rgba(60,40,20,.5)}
+.order__top{display:flex;flex-wrap:wrap;align-items:center;gap:10px;justify-content:space-between;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.order__date{font-size:.78rem;color:var(--ink-mute)}
+.order__badges{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.obadge{font-size:.7rem;font-weight:700;padding:4px 11px;border-radius:var(--pill);letter-spacing:.02em}
+.obadge--paid{background:rgba(18,138,99,.14);color:#0f7a58}
+.obadge--pending{background:rgba(193,154,75,.18);color:var(--gold-deep)}
+.obadge--failed{background:rgba(168,30,40,.12);color:var(--brand)}
+.obadge--whatsapp{background:rgba(37,211,102,.16);color:#0f8a72}
+.obadge--stage{background:var(--cream-2);color:var(--ink-soft)}
+.order__grid{display:grid;grid-template-columns:1.1fr 1fr;gap:18px}
+.order__buyer p{font-size:.86rem;color:var(--ink);margin:3px 0;line-height:1.5}
+.order__buyer .lbl{color:var(--ink-mute);font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;margin-top:8px}
+.order__buyer a{color:var(--gold-deep)}
+.order__items{font-size:.85rem}
+.order__items table{width:100%;border-collapse:collapse}
+.order__items td{padding:4px 0;color:var(--ink-soft);vertical-align:top}
+.order__items td:last-child{text-align:right;white-space:nowrap;color:var(--ink)}
+.order__total{display:flex;justify-content:space-between;border-top:1px solid var(--line);margin-top:6px;padding-top:8px;font-weight:600}
+.order__total b{color:var(--brand);font-family:var(--serif);font-size:1.15rem}
+.order__actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.order__actions .spacer{flex:1}
+@media(max-width:640px){ .order__grid{grid-template-columns:1fr} .tabs{margin-left:0} }
 @media(max-width:560px){
   .row{grid-template-columns:52px 1fr;grid-template-areas:"thumb info" "actions actions"}
   .row__thumb{width:52px;height:52px;grid-area:thumb}.row__info{grid-area:info}
@@ -147,19 +183,32 @@ body.dirty .dirty-dot{display:inline-flex}
 <div id="appView" hidden>
   <header class="topbar">
     <div class="topbar__brand">OĞUZCAN <span>YÖRESEL</span></div>
+    <nav class="tabs">
+      <button class="tab active" id="tabProducts" data-view="products" type="button">Ürünler</button>
+      <button class="tab" id="tabOrders" data-view="orders" type="button">Siparişler <span class="tab__badge" id="ordersBadge" hidden>0</span></button>
+    </nav>
     <div class="topbar__spacer"></div>
     <span class="dirty-dot">Kaydedilmemiş değişiklik</span>
     <button class="btn btn--ghost btn--sm" id="newBtn">+ Yeni Ürün</button>
     <button class="btn btn--gold btn--sm" id="publishBtn">Kaydet ve Yayınla</button>
+    <button class="btn btn--ghost btn--sm" id="refreshOrdersBtn" hidden>↻ Yenile</button>
     <button class="btn btn--ghost btn--sm" id="logoutBtn">Çıkış</button>
   </header>
-  <div class="wrap">
+
+  <!-- PRODUCTS VIEW -->
+  <div class="wrap" id="productsView">
     <div class="toolbar">
       <input class="search" id="search" type="search" placeholder="Ürün ara…">
       <select id="catFilter"><option value="">Tüm kategoriler</option></select>
       <span class="count" id="count"></span>
     </div>
     <div class="grid" id="grid"></div>
+  </div>
+
+  <!-- ORDERS VIEW -->
+  <div class="wrap" id="ordersView" hidden>
+    <div class="orders-stats" id="ordersStats"></div>
+    <div id="ordersList"></div>
   </div>
 </div>
 
