@@ -13,9 +13,12 @@ export default async function handler(req, res) {
     return sendJson(res, 400, { error: "Eksik sipariş bilgisi." });
   }
   const SHIP_FREE_MIN = 1500, SHIP_FEE = 180;
+  const isBaharat = (i) => String(i.cat || "") === "Baharatlar";
   const subtotal = items.reduce((n, i) => n + Number(i.price) * Number(i.qty), 0);
-  const shipping = subtotal > 0 && subtotal < SHIP_FREE_MIN ? SHIP_FEE : 0;
-  const total = subtotal + shipping;
+  const discount = items.reduce((n, i) => isBaharat(i) ? n + Math.floor(Number(i.qty) / 2) * Number(i.price) : n, 0);
+  const productsTotal = subtotal - discount;
+  const shipping = productsTotal > 0 && productsTotal < SHIP_FREE_MIN ? SHIP_FEE : 0;
+  const total = productsTotal + shipping;
   const id = newOrderId();
   try {
     await saveOrder({
@@ -31,8 +34,9 @@ export default async function handler(req, res) {
         address: String(buyer.address || "").slice(0, 400),
         city: String(buyer.city || "").slice(0, 80),
       },
-      items: items.map((i) => ({ name: i.name, size: i.size, qty: Number(i.qty), price: Number(i.price) })),
+      items: items.map((i) => ({ name: i.name, size: i.size, qty: Number(i.qty), price: Number(i.price), cat: i.cat })),
       subtotal,
+      discount,
       shipping,
       total,
       currency: "TRY",

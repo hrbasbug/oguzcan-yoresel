@@ -22,9 +22,13 @@ export default async function handler(req, res) {
   const convId = newOrderId();
 
   const SHIP_FREE_MIN = 1500, SHIP_FEE = 180;
+  const isBaharat = (i) => String(i.cat || "") === "Baharatlar";
+  const paidQty = (i) => isBaharat(i) ? Number(i.qty) - Math.floor(Number(i.qty) / 2) : Number(i.qty);
   const subtotal = items.reduce((n, i) => n + Number(i.price) * Number(i.qty), 0);
-  const shipping = subtotal > 0 && subtotal < SHIP_FREE_MIN ? SHIP_FEE : 0;
-  const total = subtotal + shipping;
+  const discount = items.reduce((n, i) => isBaharat(i) ? n + Math.floor(Number(i.qty) / 2) * Number(i.price) : n, 0);
+  const productsTotal = subtotal - discount;
+  const shipping = productsTotal > 0 && productsTotal < SHIP_FREE_MIN ? SHIP_FEE : 0;
+  const total = productsTotal + shipping;
   const priceStr = total.toFixed(2);
 
   const fullName = String(buyer.name || "Musteri").trim();
@@ -71,7 +75,7 @@ export default async function handler(req, res) {
         name: `${i.name || "Ürün"} ${i.size || ""}`.trim().slice(0, 100),
         category1: String(i.cat || "Gıda"),
         itemType: Iyzipay.BASKET_ITEM_TYPE.PHYSICAL,
-        price: (Number(i.price) * Number(i.qty)).toFixed(2),
+        price: (paidQty(i) * Number(i.price)).toFixed(2),
       })),
       ...(shipping > 0 ? [{
         id: "KARGO",
@@ -105,8 +109,9 @@ export default async function handler(req, res) {
           method: "iyzico",
           stage: "yeni",
           buyer: { name: fullName, phone: buyer.phone || "", email: buyer.email || "", address: address, city: city },
-          items: items.map((i) => ({ name: i.name, size: i.size, qty: Number(i.qty), price: Number(i.price) })),
+          items: items.map((i) => ({ name: i.name, size: i.size, qty: Number(i.qty), price: Number(i.price), cat: i.cat })),
           subtotal: subtotal,
+          discount: discount,
           shipping: shipping,
           total: total,
           currency: "TRY",

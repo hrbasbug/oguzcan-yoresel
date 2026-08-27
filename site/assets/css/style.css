@@ -242,6 +242,30 @@ h1{font-optical-sizing:auto}
   box-shadow:0 8px 18px -8px rgba(168,30,40,.7)}
 .card--out .card__media img{filter:grayscale(.55) opacity(.72)}
 .card--out .card__price{color:var(--ink-mute)}
+.card__promo{position:absolute;top:12px;right:12px;background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#fff;
+  font-size:.6rem;font-weight:700;padding:5px 10px;border-radius:var(--pill);letter-spacing:.04em;text-transform:uppercase;
+  box-shadow:0 8px 18px -8px rgba(160,125,51,.75)}
+
+/* ===== Promo banner ===== */
+.promo{padding:clamp(40px,6vw,64px) 0;background:linear-gradient(135deg,var(--brand-deep),var(--brand));position:relative;overflow:hidden}
+.promo::before{content:"";position:absolute;inset:0;background:var(--grain);opacity:.5;mix-blend-mode:overlay;pointer-events:none}
+.promo__head{text-align:center;margin-bottom:32px;position:relative}
+.promo__tag{display:inline-block;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.24);color:#ffe9c9;
+  font-size:.78rem;font-weight:600;padding:6px 16px;border-radius:var(--pill);letter-spacing:.04em}
+.promo__title{font-family:var(--serif);font-size:clamp(1.5rem,3.6vw,2.3rem);color:#fff;margin-top:14px}
+.promo__cards{display:grid;grid-template-columns:1fr 1fr;gap:20px;position:relative}
+.promo__card{background:rgba(255,255,255,.09);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.2);
+  border-radius:var(--r-lg);padding:clamp(24px,3vw,34px);color:#fff;text-align:center;box-shadow:var(--shadow-lg)}
+.promo__deal{font-family:var(--serif);font-size:clamp(1.7rem,4.4vw,2.5rem);font-weight:700;line-height:1.1;margin-bottom:10px;color:#fff}
+.promo__deal span{color:var(--gold-soft)}
+.promo__card h3{font-size:1.05rem;font-weight:600;margin-bottom:8px;color:#fff}
+.promo__card p{font-size:.9rem;color:rgba(255,255,255,.86);line-height:1.6;margin-bottom:20px}
+.promo__card .btn--light{background:#fff;color:var(--brand-dark)}
+@media(max-width:700px){ .promo__cards{grid-template-columns:1fr} }
+
+/* discount lines */
+.cart__line--disc{color:var(--green-dark);font-weight:600}
+.co-line2--disc{color:var(--green-dark);font-weight:600}
 .empty{grid-column:1/-1;text-align:center;color:var(--ink-soft);padding:40px}
 
 /* ===== Values (vizyon/misyon) ===== */

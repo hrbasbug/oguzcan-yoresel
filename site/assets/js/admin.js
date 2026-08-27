@@ -407,6 +407,7 @@ function renderOrders() {
           <table>${items}</table>
           ${o.subtotal !== undefined ? `
           <div class="order__subline"><span>Ara toplam</span><span>${o.subtotal} TL</span></div>
+          ${o.discount > 0 ? `<div class="order__subline"><span>İndirim (1+1)</span><span>−${o.discount} TL</span></div>` : ""}
           <div class="order__subline"><span>Kargo</span><span>${o.shipping === 0 ? "Ücretsiz" : (o.shipping || 0) + " TL"}</span></div>` : ""}
           <div class="order__total"><span>Toplam</span><b>${o.total} TL</b></div>
         </div>

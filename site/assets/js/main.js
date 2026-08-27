@@ -50,15 +50,20 @@ function cartSave(items){ try{ localStorage.setItem(CART_KEY, JSON.stringify(ite
 function cartCount(){ return cartGet().reduce((n,i)=>n+i.qty,0); }
 function cartTotal(){ return cartGet().reduce((n,i)=>n+i.price*i.qty,0); }
 function shippingFor(subtotal){ return subtotal>0 && subtotal<SHIP_FREE_MIN ? SHIP_FEE : 0; }
-function cartShipping(){ return shippingFor(cartTotal()); }
-function cartGrand(){ return cartTotal() + cartShipping(); }
+// Baharatlarda "1 alana 1 bedava": her 2 üründen 1'i ücretsiz (ürün bazında).
+function itemCat(i){ if(i.cat) return i.cat; const p=PRODUCTS.find(x=>x.id===i.id); return p?p.cat:""; }
+function isBogo(i){ return itemCat(i)==="Baharatlar"; }
+function cartDiscount(){ return cartGet().reduce((d,i)=> isBogo(i) ? d + Math.floor(i.qty/2)*i.price : d, 0); }
+function cartNet(){ return cartTotal() - cartDiscount(); }
+function cartShipping(){ return shippingFor(cartNet()); }
+function cartGrand(){ return cartNet() + cartShipping(); }
 function cartAdd(id){
   const p = PRODUCTS.find(x=>x.id===id);
   if(!p || !hasPrice(p) || p.stock===false) return;
   const items = cartGet();
   const ex = items.find(i=>i.id===id);
   if(ex) ex.qty += 1;
-  else items.push({ id:p.id, name:p.name, size:p.size, price:Number(p.price), img:p.img, qty:1 });
+  else items.push({ id:p.id, name:p.name, size:p.size, price:Number(p.price), img:p.img, cat:p.cat, qty:1 });
   cartSave(items);
   toast("Sepete eklendi ✓");
   openCart();
@@ -146,13 +151,14 @@ function renderCart(){
       </div>
       <button class="cart-item__rm" type="button" data-act="rm" data-id="${i.id}" aria-label="Kaldır">✕</button>
     </div>`).join("");
-  const sub = cartTotal(), ship = cartShipping(), remain = SHIP_FREE_MIN - sub;
+  const sub = cartTotal(), disc = cartDiscount(), net = cartNet(), ship = cartShipping(), remain = SHIP_FREE_MIN - net;
   const hint = ship>0
     ? `<div class="cart__ship-hint">🚚 <b>${remain} TL</b> daha ekleyin, <b>kargo bedava!</b></div>`
     : `<div class="cart__ship-hint ok">🎉 Kargo <b>bedava!</b></div>`;
   foot.innerHTML = `
     ${hint}
     <div class="cart__line"><span>Ara toplam</span><span>${sub} TL</span></div>
+    ${disc>0 ? `<div class="cart__line cart__line--disc"><span>İndirim (1+1 Baharat)</span><span>−${disc} TL</span></div>` : ""}
     <div class="cart__line"><span>Kargo</span><span>${ship===0 ? "Ücretsiz" : ship+" TL"}</span></div>
     <div class="cart__total"><span>Toplam</span><b>${cartGrand()} TL</b></div>
     <a class="btn btn--primary cart__checkout" href="odeme.html">Ödemeye Geç</a>
@@ -179,19 +185,20 @@ function renderCheckout(){
       <div class="co-line__info"><span class="co-line__name">${esc(i.name)}</span><span class="co-line__meta">${esc(i.size)} × ${i.qty}</span></div>
       <span class="co-line__price">${i.price*i.qty} TL</span>
     </div>`).join("");
-  const sub = cartTotal(), ship = cartShipping();
+  const sub = cartTotal(), disc = cartDiscount(), net = cartNet(), ship = cartShipping();
   const totals = document.getElementById("coTotals");
   if(totals){
     totals.innerHTML = `
       <div class="co-line2"><span>Ara toplam</span><span>${sub} TL</span></div>
+      ${disc>0 ? `<div class="co-line2 co-line2--disc"><span>İndirim (1+1 Baharat)</span><span>−${disc} TL</span></div>` : ""}
       <div class="co-line2"><span>Kargo</span><span>${ship===0 ? "Ücretsiz" : ship+" TL"}</span></div>
-      <div class="co-total"><span>Toplam</span><b>${sub+ship} TL</b></div>
+      <div class="co-total"><span>Toplam</span><b>${net+ship} TL</b></div>
       ${ship>0
-        ? `<p class="co-shiphint">🚚 ${SHIP_FREE_MIN-sub} TL daha ekleyin, kargo <b>bedava</b>.</p>`
+        ? `<p class="co-shiphint">🚚 ${SHIP_FREE_MIN-net} TL daha ekleyin, kargo <b>bedava</b>.</p>`
         : `<p class="co-shiphint ok">🎉 Kargonuz <b>ücretsiz</b>.</p>`}`;
   }
   const t = document.getElementById("coTotal");
-  if(t) t.textContent = (sub+ship)+" TL";
+  if(t) t.textContent = (net+ship)+" TL";
 }
 function initCheckout(){
   const root = document.getElementById("checkoutRoot");
@@ -202,9 +209,10 @@ function initCheckout(){
 
   function completeViaWhatsApp(items, d, note){
     const lines = items.map(i=>`• ${i.name} ${i.size} x${i.qty} = ${i.price*i.qty} TL`).join("\n");
-    const sub = cartTotal(), ship = cartShipping();
+    const sub = cartTotal(), disc = cartDiscount(), net = cartNet(), ship = cartShipping();
     const shipTxt = ship===0 ? "Ücretsiz" : ship+" TL";
-    const txt = `Merhaba, sipariş vermek istiyorum.\n\n${lines}\n\nAra toplam: ${sub} TL\nKargo: ${shipTxt}\nTOPLAM: ${sub+ship} TL\n\nAd Soyad: ${d.name}\nTelefon: ${d.phone}\nE-posta: ${d.email||"-"}\nAdres: ${d.address||""} ${d.city||""}`;
+    const discLine = disc>0 ? `İndirim (1+1 Baharat): -${disc} TL\n` : "";
+    const txt = `Merhaba, sipariş vermek istiyorum.\n\n${lines}\n\nAra toplam: ${sub} TL\n${discLine}Kargo: ${shipTxt}\nTOPLAM: ${net+ship} TL\n\nAd Soyad: ${d.name}\nTelefon: ${d.phone}\nE-posta: ${d.email||"-"}\nAdres: ${d.address||""} ${d.city||""}`;
     const url = waLink(txt);
     // Record the WhatsApp order so it also appears in the admin panel (best-effort).
     try{
@@ -312,7 +320,7 @@ function renderProducts(cat="Tümü", limit=null){
     <article class="card reveal${out ? " card--out" : ""}">
       <div class="card__media">
         <span class="card__cat">${p.cat}</span>
-        ${out ? `<span class="card__badge">Tükendi</span>` : ""}
+        ${out ? `<span class="card__badge">Tükendi</span>` : (p.cat==="Baharatlar" ? `<span class="card__promo">1 Alana 1 Bedava</span>` : "")}
         <img src="${imgSrc(p.img)}" alt="${p.name} ${p.size}" loading="lazy">
       </div>
       <div class="card__body">

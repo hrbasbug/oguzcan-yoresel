@@ -12,7 +12,7 @@
       "name": "Domates Salçası",
       "size": "450 g",
       "cat": "Salçalar",
-      "price": 160,
+      "price": 144,
       "img": "domates-salcasi-450g.png",
       "desc": "Dalından koparılan domatesleri kendi mevsiminde, katkısız olarak işliyoruz. Domatesin gerçek tadını, kokusunu ve rengini sofranıza taşıyan yoğun kıvamlı ev usulü salça.",
       "stock": true
@@ -22,7 +22,7 @@
       "name": "Domates Salçası",
       "size": "1 Kg",
       "cat": "Salçalar",
-      "price": 330,
+      "price": 297,
       "img": "domates-salcasi-1kg.png",
       "desc": "Kalabalık sofralar ve kışlık hazırlıklar için ideal 1 kg boy. Tamamen doğal, katkısız; çorbadan yemeğe her tarifin lezzetini tamamlar.",
       "stock": true
@@ -32,7 +32,7 @@
       "name": "Tatlı Biber Salçası",
       "size": "450 g",
       "cat": "Salçalar",
-      "price": 185,
+      "price": 167,
       "img": "tatli-biber-salcasi-450g.png",
       "desc": "Güneşte özenle kurutulan biberlerden, acısız ve yumuşak lezzetiyle. Kahvaltıdan yemeğe kadar sofranıza Gaziantep'in doğal tadını getirir.",
       "stock": true
@@ -42,7 +42,7 @@
       "name": "Tatlı Biber Salçası",
       "size": "1 Kg",
       "cat": "Salçalar",
-      "price": 385,
+      "price": 347,
       "img": "tatli-biber-salcasi-1kg.png",
       "desc": "Katkısız, güneşte kurutulmuş tatlı biberden hazırlanan yoğun kıvamlı salça. Ailece tüketim için ekonomik 1 kg boy.",
       "stock": true
@@ -52,7 +52,7 @@
       "name": "Tatlı Biber Salçası",
       "size": "2 Kg",
       "cat": "Salçalar",
-      "price": 700,
+      "price": 630,
       "img": "tatli-biber-salcasi-2kg.png",
       "desc": "Yoğun kullanan mutfaklar ve kışlık için en avantajlı 2 kg boy. Doğal, katkısız ve el emeği tatlı biber salçası.",
       "stock": true
@@ -62,7 +62,7 @@
       "name": "Acı Biber Salçası",
       "size": "450 g",
       "cat": "Salçalar",
-      "price": 185,
+      "price": 167,
       "img": "aci-biber-salcasi-450g.png",
       "desc": "Güneşte kurutulan acı biberlerden, o meşhur Antep acısıyla. Katkısız üretim; yemeklerinize karakterli ve dengeli bir acılık katar.",
       "stock": true
@@ -72,7 +72,7 @@
       "name": "Acı Biber Salçası",
       "size": "2 Kg",
       "cat": "Salçalar",
-      "price": 700,
+      "price": 630,
       "img": "aci-biber-salcasi-2kg.png",
       "desc": "Acı sevenler için bol miktarda, ekonomik 2 kg boy. Doğal yöntemlerle, güneşte kurutulmuş biberden hazırlanan gerçek Antep acı salçası.",
       "stock": true
@@ -82,7 +82,7 @@
       "name": "Nar Ekşisi",
       "size": "300 g",
       "cat": "Soslar",
-      "price": 300,
+      "price": 270,
       "img": "nar-eksisi-300g.png",
       "desc": "Gerçek nar suyundan, yavaşça kaynatılarak elde edilen yoğun ve dengeli ekşi. Salatalara, mezelere ve et yemeklerine eşsiz bir tat verir.",
       "stock": true
@@ -92,7 +92,7 @@
       "name": "Nar Ekşisi",
       "size": "575 g",
       "cat": "Soslar",
-      "price": 450,
+      "price": 405,
       "img": "nar-eksisi-575g.png",
       "desc": "Katkısız, koyu kıvamlı nar ekşisinin avantajlı büyük boyu. Sofranızın vazgeçilmez doğal sosu; mevsim salatalarının olmazsa olmazı.",
       "stock": true
