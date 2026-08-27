@@ -32,7 +32,8 @@ function imgSrc(img){ return /^https?:\/\//.test(img) ? img : `assets/urunler/${
 function inStock(p){ return p.stock !== false; }
 function priceHTML(p){
   if(p.price === null || p.price === undefined || p.price === "") return `<span class="card__price ask">Fiyat için iletişime geçin</span>`;
-  return `<span class="card__price">${p.price} <small>TL</small></span>`;
+  const old = (p.oldPrice && p.oldPrice > p.price) ? `<s class="card__oldprice">${p.oldPrice} TL</s> ` : "";
+  return `<span class="card__price">${old}${p.price} <small>TL</small></span>`;
 }
 function orderMsg(p){
   const s = p.price!==null ? ` (${p.price} TL)` : "";
@@ -320,7 +321,7 @@ function renderProducts(cat="Tümü", limit=null){
     <article class="card reveal${out ? " card--out" : ""}">
       <div class="card__media">
         <span class="card__cat">${p.cat}</span>
-        ${out ? `<span class="card__badge">Tükendi</span>` : (p.cat==="Baharatlar" ? `<span class="card__promo">1 Alana 1 Bedava</span>` : "")}
+        ${out ? `<span class="card__badge">Tükendi</span>` : (p.cat==="Baharatlar" ? `<span class="card__promo">1 Alana 1 Bedava</span>` : ((p.oldPrice && p.oldPrice>p.price) ? `<span class="card__promo card__promo--off">%10 İndirim</span>` : ""))}
         <img src="${imgSrc(p.img)}" alt="${p.name} ${p.size}" loading="lazy">
       </div>
       <div class="card__body">

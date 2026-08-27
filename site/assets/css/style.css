@@ -245,6 +245,8 @@ h1{font-optical-sizing:auto}
 .card__promo{position:absolute;top:12px;right:12px;background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#fff;
   font-size:.6rem;font-weight:700;padding:5px 10px;border-radius:var(--pill);letter-spacing:.04em;text-transform:uppercase;
   box-shadow:0 8px 18px -8px rgba(160,125,51,.75)}
+.card__promo--off{background:linear-gradient(135deg,var(--brand),var(--brand-dark));box-shadow:0 8px 18px -8px rgba(168,30,40,.7)}
+.card__oldprice{font-family:var(--font);font-size:.82rem;font-weight:500;color:var(--ink-mute);text-decoration:line-through}
 
 /* ===== Promo banner ===== */
 .promo{padding:clamp(40px,6vw,64px) 0;background:linear-gradient(135deg,var(--brand-deep),var(--brand));position:relative;overflow:hidden}
